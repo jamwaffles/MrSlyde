@@ -2,3 +2,36 @@ body {
 	padding: 100px;
 	font-family: 'Ubuntu', sans-serif;
 }
+
+div.mrslyde div.slider {
+	
+}
+
+div.mrslyde div.track {
+	border: 1px solid #76a7dc;
+	height: 10px;
+	margin: 3px 0px;
+	background: #fff;
+}
+
+div.mrslyde div.handle {
+	border: 1px solid #76a7dc;
+	position: absolute;
+	height: 16px;
+	width: 16px;
+	margin-top: -3px;
+	background: #fff;
+	cursor: pointer;
+}
+
+div.mrslyde div.values {
+	text-align: center;
+}
+
+div.mrslyde span.left {
+	float: left;
+}
+
+div.mrslyde span.right {
+	float: right;
+}
