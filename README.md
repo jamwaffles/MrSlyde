@@ -50,19 +50,19 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 	What the default value of the slider should be when `$.mrslyde` is invoked. **Note that this uses the `<input>`'s `value` attribute instead of a `data-` attribute.**
 
-- **stepSize** (_data-msStepSize): 10
+- **stepSize** (_data-msStepSize_): 10
 
 	Sets to which multiple the slider value should snap to. For example, a value of `15` will increment the slider's value in steps of 15. **Setting actual handle snap is defined by the `snap:` option, below.**
 
-- **snap** (_data-msSnap): true
+- **snap** (_data-msSnap_): true
 
 	If set to true, this will tell the handle to 'jump' to each step point along the slider track, instead of following the mouse pixel for pixel.
 
-- **showValues** (_data-msShowValues): true
+- **showValues** (_data-msShowValues_): true
 
 	Specifies whether the minimum, current and maximum values should be displayed under the slider track.
 
-- **precision** (_data-msPrecision): 0
+- **precision** (_data-msPrecision_): 0
 
 	Specifies how many digits should be present after the decimal point. For whole values, leave this at `0`. For values less than 1, this option _must_ be set to **less than 1**.
 
