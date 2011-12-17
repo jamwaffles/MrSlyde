@@ -13,6 +13,13 @@ html.slyding {
 	user-select: none;
 }
 
+/* Container has to be inline */
+div.mrslyde {
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+}
+
 /* Track style */
 div.mrslyde div.track {
 	border: 1px solid #76a7dc;
