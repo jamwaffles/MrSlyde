@@ -31,6 +31,11 @@
 			return Math.round(value / base) * base;
 		}
 
+		var toDp = function(value, numDp) {
+			value = parseFloat(value);
+			return value.toFixed(numDp);
+		}
+
 		// Set handle's position from value given. Return left offset.
 		var positionFromValue = function(value, container, opt) {
 			var handle = container.find('div.handle');
@@ -58,7 +63,7 @@
 				var offset = handlePosition - leftOffs;
 				var value = input.data('msmin') + (input.data('msmax') - input.data('msmin')) * (offset / trackWidth);
 
-				return toNearest(value.toFixed(input.data('msprecision')), input.data('msstepsize'));
+				return toNearest(value, input.data('msstepsize'));
 			} else {
 				return false;
 			}
@@ -66,7 +71,10 @@
 
 		// Set value display's text to slider value, nothing more
 		var setValueDisplay = function(input, container) {
-			container.find('span.center').text(confine(input.val(), input.data('msmin'), input.data('msmax')));
+			if(input.data('msshowvalues')) {
+				var value = toDp(input.val(), input.data('msprecision'));
+				container.find('span.center').text(value);
+			}
 		}
 
 		var configure = function(input, opt) {
@@ -112,7 +120,7 @@
 				opt.default = toNearest(opt.default, opt.stepSize);
 			}
 
-			input.val(opt.default);
+			input.val(opt.default)//.hide();
 		};
 
 		var init = function(input, opt, html) {
