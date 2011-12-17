@@ -68,6 +68,9 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 # TODO
 
+- Minified version
+
+### Finished Sat 17th Dec 2:03PM GMT
+
 - Handle snapping
 - Code optimisations (it runs well at present, but I'd like it to run faster)
-- Minified version
