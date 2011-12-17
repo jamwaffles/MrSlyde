@@ -59,7 +59,6 @@
 
 			handle.css({ left: xPosition });
 
-console.log(value, xPosition, leftOffs, trackWidth);
 			return xPosition;
 		}
 
