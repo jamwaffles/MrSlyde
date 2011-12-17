@@ -163,6 +163,8 @@
 			// Set handle to initial position, and value display
 			setValue(input.data('ms').default, input);
 			positionFromValue(input.val(), input.next());
+
+			input.hide();
 		};
 
 		// Unbind events to prevent duplicates
