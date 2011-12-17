@@ -25,7 +25,11 @@
 
 		var confine = function(value, min, max) {
 			return Math.min(max, Math.max(value, min));
-		};
+		}
+
+		var toNearest = function(value, base) {
+			return Math.round(value / base) * base;
+		}
 
 		// Set handle's position from value given. Return left offset.
 		var positionFromValue = function(value, container, opt) {
@@ -39,38 +43,76 @@
 			handle.css({ left: xPosition });
 
 			return xPosition;
-		};
+		}
+
+		var valueFromPosition = function(handlePosition, container) {
+			var track = container.find('div.track');
+			var handle = container.find('div.handle');
+			var input = container.prev();
+
+			var leftOffs = track.offset().left;
+			var handleWidth = handle.outerWidth();
+			var trackWidth = track.outerWidth() - handleWidth;
+
+			if(handlePosition >= leftOffs && handlePosition <= (leftOffs + trackWidth)) {
+				var offset = handlePosition - leftOffs;
+				var value = input.data('msmin') + (input.data('msmax') - input.data('msmin')) * (offset / trackWidth);
+
+				return toNearest(value.toFixed(input.data('msprecision')), input.data('msstepsize'));
+			} else {
+				return false;
+			}
+		}
 
 		// Set value display's text to slider value, nothing more
-		var setValueDisplay = function(value, container) {
-			container.find('span.center').text(value);
+		var setValueDisplay = function(input, container) {
+			container.find('span.center').text(confine(input.val(), input.data('msmin'), input.data('msmax')));
 		}
 
 		var configure = function(input, opt) {
-			if(input.data('msmin')) {
-				opt.min = input.data('msmin');
-			}
-			if(input.data('msmax')) {
-				opt.max = input.data('msmax');
-			}
 			if(input.data('msstepsize')) {
 				opt.stepSize = input.data('msstepsize');
+			} else {
+				input.data('msstepsize', opt.stepSize);
 			}
+
+			if(input.data('msmin')) {
+				opt.min = toNearest(input.data('msmin'), opt.stepSize);
+			} else {
+				input.data('msmin', opt.min);
+			}
+
+			if(input.data('msmax')) {
+				opt.max = toNearest(input.data('msmax'), opt.stepSize);
+			} else {
+				input.data('msmax', opt.max);
+			}
+
 			if(input.data('mssnap')) {
 				opt.snap = input.data('mssnap');
+			} else {
+				input.data('mssnap', opt.snap);
 			}
+
 			if(input.data('msshowvalues')) {
 				opt.showValues = input.data('msshowvalues');
+			} else {
+				input.data('msshowvalues', opt.showValues);
 			}
+
 			if(input.data('msprecision')) {
 				opt.precision = input.data('msprecision');
+			}  else {
+				input.data('msprecision', opt.precision);
 			}
 
 			if(input.val()) {
-				opt.default = confine(input.val(), opt.min, opt.max);
+				opt.default = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
 			} else {
-				input.val(opt.default);
+				opt.default = toNearest(opt.default, opt.stepSize);
 			}
+
+			input.val(opt.default);
 		};
 
 		var init = function(input, opt, html) {
@@ -86,11 +128,11 @@
 			html.width(input.outerWidth());
 
 			// Append markup to document
-			input.after(html);
+			input.addClass('mrslyde').after(html);
 
 			// Set handle to initial position, and value display
 			positionFromValue(input.val(), html, opt);
-			setValueDisplay(confine(input.val(), opt.min, opt.max), html);
+			setValueDisplay(input, html);
 		};
 
 		return this.each(function() {
@@ -105,10 +147,49 @@
 			init(input, opt, html);
 
 			// Unbind events to prevent duplicates
-			//$('body').off);
+			$('body').off('mousedown.mrslyde');
+			$('body').off('mousemove.mrslyde');
+			$('body').off('mouseup.mrslyde');
+			$('input.mrslyde').off('change.mrslyde');
 
 			// Bind events
-			
+			$('body').on('mousedown', function(e) {
+				var elem = $(e.target);
+
+				if(elem.is('.handle')) {
+					//valueFromPosition(e.pageX, elem.closest('div.mrslyde'));
+					elem.closest('div.mrslyde').addClass('slyding');
+
+					// Add class to <html>
+					$('html').addClass('slyding');
+				}
+			});
+			$('body').on('mousemove', function(e) {
+				var container = $('div.mrslyde.slyding');
+
+				// Position handle and set value
+				if(container.length) {
+					var handle = container.find('div.handle');
+					var track = container.find('div.slider');
+
+					var leftOffs = confine(e.pageX - (handle.outerWidth() / 2), track.offset().left, track.offset().left + track.outerWidth() - handle.outerWidth());
+					var value = valueFromPosition(leftOffs, container);
+
+					handle.css({ left: leftOffs });
+
+					setValueDisplay(container.prev(), container);
+					container.prev().val(value);
+				}
+			});
+			$('body').on('mouseup', function() {
+				$('div.mrslyde.slyding').removeClass('slyding');
+			});
+			$('input.mrslyde').on('change', function() {
+				$(this).val(confine($(this).val(), $(this).data('msmin'), $(this).data('msmax')));
+
+				positionFromValue($(this).val(), $(this).next(), { min: $(this).data('msmin'), max: $(this).data('msmax') });
+				setValueDisplay($(this), $(this).next());
+			});
 		});
 	};
 })(jQuery);
