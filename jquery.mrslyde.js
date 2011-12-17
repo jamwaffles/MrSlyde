@@ -1,3 +1,13 @@
+/***************************************
+ *                                     *
+ * MrSlyde 0.3                         *
+ *                                     *
+ * James Waples (jamwaffles@gmail.com) *
+ *                                     *
+ * http://www.jamwaffles.co.uk         *
+ *                                     *
+ ***************************************/
+
 (function($) {
 	$.fn.mrslyde = function(options) {
 		// Create some defaults, extending them with any options that were provided
@@ -78,7 +88,7 @@
 		}
 
 		var configure = function(input, opt) {
-			if(input.data('msstepsize')) {
+			/*if(input.data('msstepsize')) {
 				opt.stepSize = input.data('msstepsize');
 			} else {
 				input.data('msstepsize', opt.stepSize);
@@ -118,7 +128,39 @@
 				opt.default = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
 			} else {
 				opt.default = toNearest(opt.default, opt.stepSize);
+			}*/
+
+			if(input.data('msstepsize')) {
+				opt.stepSize = input.data('msstepsize');
 			}
+
+			if(input.data('msmin')) {
+				opt.min = toNearest(input.data('msmin'), opt.stepSize);
+			}
+
+			if(input.data('msmax')) {
+				opt.max = toNearest(input.data('msmax'), opt.stepSize);
+			}
+
+			if(input.data('mssnap')) {
+				opt.snap = input.data('mssnap');
+			}
+
+			if(input.data('msshowvalues')) {
+				opt.showValues = input.data('msshowvalues');
+			}
+
+			if(input.data('msprecision')) {
+				opt.precision = input.data('msprecision');
+			}
+
+			if(input.val()) {
+				opt.default = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
+			} else {
+				opt.default = toNearest(opt.default, opt.stepSize);
+			}
+
+			input.data('ms', opt);
 
 			input.val(opt.default)//.hide();
 		};
