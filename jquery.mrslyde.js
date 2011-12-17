@@ -1,12 +1,12 @@
-/***************************************
- *                                     *
- * MrSlyde 1.0                         *
- *                                     *
- * James Waples (jamwaffles@gmail.com) *
- *                                     *
- * http://www.jamwaffles.co.uk         *
- *                                     *
- ***************************************/
+/**********************************************
+ *                                            *
+ * MrSlyde 1.0                                *
+ *                                            *
+ * James Waples (jamwaffles@gmail.com)        *
+ *                                            *
+ * http://www.jamwaffles.co.uk/jquery/mrslyde *
+ *                                            *
+ **********************************************/
 
 (function($) {
 	$.fn.mrslyde = function(options) {
@@ -59,6 +59,7 @@
 
 			handle.css({ left: xPosition });
 
+console.log(value, xPosition, leftOffs, trackWidth);
 			return xPosition;
 		}
 
@@ -121,12 +122,20 @@
 				opt.max = toNearest(input.data('msmax'), opt.stepSize);
 			}
 
-			if(input.data('mssnap')) {
-				opt.snap = input.data('mssnap');
+			if(input.data('mssnap') != undefined) {
+				if(input.data('mssnap') == 'false' || input.data('mssnap') == '0') {
+					opt.snap = false;
+				} else if(input.data('mssnap') == 'true' || input.data('mssnap') == '1') {
+					opt.snap = true;
+				}
 			}
 
-			if(input.data('msshowvalues')) {
-				opt.showValues = input.data('msshowvalues');
+			if(input.data('msshowvalues') != undefined) {
+				if(input.data('msshowvalues') == 'false' || input.data('msshowvalues') == '0') {
+					opt.showValues = false;
+				} else if(input.data('msshowvalues') == 'true' || input.data('msshowvalues') == '1') {
+					opt.showValues = true;
+				}
 			}
 
 			if(input.data('msprecision')) {
@@ -139,6 +148,9 @@
 		};
 
 		var init = function(input, opt, html) {
+			// Hide input
+			input.hide();
+
 			// Setup HTML
 			if(!opt.showValues) {
 				html.remove('div.values');
@@ -148,8 +160,9 @@
 				html.find('span.right').text(opt.max);
 			}
 
-			// Set track width
+			// Set CSS
 			html.width(input.outerWidth());
+			html.find('div.handle').css({ left: html.offset().left });
 
 			// Stop autocomplete
 			input.attr('autocomplete', 'off');
@@ -163,8 +176,6 @@
 			// Set handle to initial position, and value display
 			setValue(input.data('ms').default, input);
 			positionFromValue(input.val(), input.next());
-
-			input.hide();
 		};
 
 		// Unbind events to prevent duplicates
@@ -196,6 +207,7 @@
 		});
 		$('body').on('mouseup', function() {
 			$('div.mrslyde.slyding').removeClass('slyding');
+			$('html').removeClass('slyding');
 		});
 		$('body').on('change', 'input.mrslyde', function() {
 			positionFromValue(setValue($(this).val(), $(this)), $(this).next());
