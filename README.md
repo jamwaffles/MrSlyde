@@ -19,7 +19,7 @@ Setting default options is done by passing an object to the plugin:
 	$('input.foo').mrslyde({
 		min: 10,
 		max: 30,
-		default: 20
+		defaultValue: 20
 	});
 
 The example above will set all matched sliders to a range of 10-30 with a default of 20.
@@ -48,7 +48,7 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 	Specifies the maximum value the slider can be set to.
 
-- **default** (_value_): 150
+- **defaultValue** (_value_): 150
 
 	What the default value of the slider should be when `$.mrslyde` is invoked. **Note that this uses the `<input>`'s `value` attribute instead of a `data-` attribute.**
 
