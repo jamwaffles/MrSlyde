@@ -11,11 +11,11 @@
 (function($) {
 	$.fn.mrslyde = function(options) {
 
-		// Create some defaults, extending them with any options that were provided
+		// Create some values, extending them with any options that were provided
 		var settings = $.extend( {
 			min: 100,
 			max: 200,
-			default: 150,
+			defaultValue: 150,
 			stepSize: 10,
 			snap: true,
 			showValues: true,
@@ -58,6 +58,7 @@
 			var xPosition = leftOffs + (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
 
 			handle.css({ left: xPosition });
+
 
 			return xPosition;
 		}
@@ -142,7 +143,7 @@
 			}
 
 			if(input.val().length) {
-				opt.default = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
+				opt.defaultValue = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
 			}
 		};
 
@@ -155,7 +156,7 @@
 				html.remove('div.values');
 			} else {
 				html.find('span.left').text(opt.min);
-				html.find('span.center').text(opt.default);
+				html.find('span.center').text(opt.defaultValue);
 				html.find('span.right').text(opt.max);
 			}
 
@@ -173,7 +174,7 @@
 			input.addClass('mrslyde').after(html);
 
 			// Set handle to initial position, and value display
-			setValue(input.data('ms').default, input);
+			setValue(input.data('ms').defaultValue, input);
 			positionFromValue(input.val(), input.next());
 		};
 
@@ -193,6 +194,7 @@
 				// Add class to <html>
 				$('html').addClass('slyding');
 			}
+			console.log('foo');
 		});
 		$('body').on('mousemove', function(e) {
 			var container = $('div.mrslyde.slyding');
@@ -217,7 +219,7 @@
 			var html = markup.clone();
 			var opt = $.extend(true, {}, settings);
 
-			// Configure options from defaults/data- attributes
+			// Configure options from defaultValues/data- attributes
 			configure(input, opt)
 
 			// Initialise slider HTML, set inital position, etc
