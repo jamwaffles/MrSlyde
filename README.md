@@ -1,5 +1,7 @@
 # MrSlyde
 
+## This is broken and shit, don't use it. Will be rewritten soon to resolve this issue...
+
 MrSlyde is a lightweight jQuery slider plugin. It is designed to be easily stylable with CSS, and seamlessly integrate with the `<input>` it is bound to.
 
 **MrSlyde requires jQuery 1.7 or higher, as it uses the `$.on()` and `$.off()` functions intriduced in this version.**

@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 1.0                                *
+ * MrSlyde 1.1                                *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
@@ -13,9 +13,9 @@
 
 		// Create some values, extending them with any options that were provided
 		var settings = $.extend( {
-			min: 100,
-			max: 200,
-			defaultValue: 150,
+			min: 0,
+			max: 100,
+			defaultValue: 50,
 			stepSize: 10,
 			snap: true,
 			showValues: true,
@@ -52,13 +52,12 @@
 			var opt = container.prev().data('ms');
 			var handle = container.find('div.handle');
 			var track = container.find('div.track');
-			var trackWidth = track.outerWidth() - handle.outerWidth();
+			var trackWidth = track.outerWidth()/* - (handle.outerWidth() / 2)*/;
 			var leftOffs = track.offset().left;
 
-			var xPosition = leftOffs + (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
+			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
 
 			handle.css({ left: xPosition });
-
 
 			return xPosition;
 		}
@@ -73,25 +72,27 @@
 		// Set position of handle from mouse position
 		var positionFromMouse = function(container, opt, pagex) {
 			var handle = container.find('div.handle');
-			var track = handle.next();
-			var trackOffs = track.offset().left;
 			var handleWidth = handle.outerWidth();
+			var track = handle.next();
 			var trackWidth = track.outerWidth() - handleWidth;
 
-			var handleOffs = pagex - (handleWidth / 2);
+			var minLeft = track.offset().left + (handleWidth / 2);
+			var maxLeft = minLeft + track.outerWidth() - handleWidth;
 
-			if(!opt.snap) {
-				handleLeft = trackOffs + handleOffs - trackOffs, trackWidth / ((opt.max - opt.min) / opt.stepSize);
-			} else {
-				handleLeft = trackOffs + toNearest(handleOffs - trackOffs, trackWidth / ((opt.max - opt.min) / opt.stepSize));
+			pagex = confine(pagex, minLeft, maxLeft);
+
+			var offset = pagex - minLeft;
+
+			// Snapping
+			if(opt.snap) {
+				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			var handlePosition = Math.max(trackOffs, Math.min(handleLeft, trackOffs + trackWidth));
+			var handleOffset = offset + (handleWidth / 2) + 1;
 
-			handle.css({ left: handlePosition });
+			handle.css({ left: handleOffset });
 
-			// Return normalised value along track
-			return (handlePosition - trackOffs) / trackWidth;
+			return offset / trackWidth;
 		}
 
 		// Set value display's text to slider value, nothing more
@@ -179,10 +180,7 @@
 		};
 
 		// Unbind events to prevent duplicates
-		$('body').off('mousedown.mrslyde');
-		$('body').off('mousemove.mrslyde');
-		$('body').off('mouseup.mrslyde');
-		$('body').off('change.mrslyde');
+		$('body').off('.mrslyde');
 
 		// Bind events
 		$('body').on('mousedown', function(e) {
@@ -194,7 +192,6 @@
 				// Add class to <html>
 				$('html').addClass('slyding');
 			}
-			console.log('foo');
 		});
 		$('body').on('mousemove', function(e) {
 			var container = $('div.mrslyde.slyding');

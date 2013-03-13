@@ -1,7 +1,7 @@
 /* Only for demo */
 body {
 	padding: 100px;
-	font-family: 'Ubuntu', sans-serif;
+	font-family: 'Ubuntu', 'Segoe UI', sans-serif;
 }
 
 /* It is imperitive you put this in your CSS somewhere - it stops things being selected when a handle is being dragged */
@@ -16,6 +16,7 @@ html.slyding {
 /* Container has to be inline */
 div.mrslyde {
 	display: inline-block;
+	position: relative;
 	zoom: 1;
 	*display: inline;
 }
