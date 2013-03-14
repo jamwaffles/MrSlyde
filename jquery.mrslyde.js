@@ -55,7 +55,7 @@
 			var trackWidth = track.outerWidth()/* - (handle.outerWidth() / 2)*/;
 			var leftOffs = track.offset().left;
 
-			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
+			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min))) - (handle.outerWidth() / 2);
 
 			handle.css({ left: xPosition });
 
@@ -88,7 +88,7 @@
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			var handleOffset = offset + (handleWidth / 2) + 1;
+			var handleOffset = offset;
 
 			handle.css({ left: handleOffset });
 
