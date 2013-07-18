@@ -60,3 +60,15 @@ div.mrslyde span.right {
 	text-align: right;
 	width: 33%;
 }
+
+/* Range slider */
+div.mrslyde.range {
+	
+}
+
+div.mrslyde.range .values .center {
+	display: block;
+	float: none;
+	width: auto;
+	text-align: center;
+} 

@@ -19,7 +19,8 @@
 			stepSize: 10,
 			snap: true,
 			showValues: true,
-			precision: 0
+			precision: 0,
+			range: false 		// Whether this is a two handled range slider or not
 		}, options);
 
 		var markup = $('<div class="mrslyde">\
@@ -48,14 +49,16 @@
 		}
 
 		// Set handle's position from value given. Return left offset.
-		var positionFromValue = function(value, container) {
+		var positionFromValue = function(value, container, el) {
 			var opt = container.prev().data('ms');
-			var handle = container.find('div.handle');
+			var handle = el !== undefined ? el : container.find('div.handle');
 			var track = container.find('div.track');
-			var trackWidth = track.outerWidth()/* - (handle.outerWidth() / 2)*/;
+			var trackWidth = track.outerWidth() - handle.outerWidth();
 			var leftOffs = track.offset().left;
 
-			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min))) - (handle.outerWidth() / 2);
+			console.log(trackWidth);
+
+			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
 
 			handle.css({ left: xPosition });
 
@@ -69,28 +72,35 @@
 			return value;
 		}
 
-		// Set position of handle from mouse position
-		var positionFromMouse = function(container, opt, pagex) {
-			var handle = container.find('div.handle');
+		// Get normalised value from the position of a handle
+		var normalisedFromPosition = function(handle) {
 			var handleWidth = handle.outerWidth();
-			var track = handle.next();
+			var track = handle.nextAll('.track');
+			var trackWidth = track.outerWidth() - handleWidth;
+
+			var offset = handle.offset().left - track.offset().left;
+
+			return offset / trackWidth;
+		}
+
+		// Set position of handle from mouse position
+		var positionFromMouse = function(container, opt, pagex, el) {
+			var handle = el !== undefined ? el : container.find('div.handle').first();
+			var handleWidth = handle.outerWidth();
+			var track = handle.nextAll('.track');
 			var trackWidth = track.outerWidth() - handleWidth;
 
 			var minLeft = track.offset().left + (handleWidth / 2);
 			var maxLeft = minLeft + track.outerWidth() - handleWidth;
 
-			pagex = confine(pagex, minLeft, maxLeft);
-
-			var offset = pagex - minLeft;
+			var offset = confine(pagex, minLeft, maxLeft) - minLeft;
 
 			// Snapping
 			if(opt.snap) {
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			var handleOffset = offset;
-
-			handle.css({ left: handleOffset });
+			handle.css({ left: offset });
 
 			return offset / trackWidth;
 		}
@@ -99,12 +109,23 @@
 		var setValue = function(value, input) {
 			var opt = input.data('ms');
 			
-			value = toDp(toNearest(confine(value, opt.min, opt.max), opt.stepSize), opt.precision);
+			if(typeof value != "object") {
+				value = toDp(toNearest(confine(value, opt.min, opt.max), opt.stepSize), opt.precision);
 
-			input.val(value);
+				input.val(value);
 
-			if(opt.showValues) {
-				input.next().find('span.center').text(value);
+				if(opt.showValues) {
+					input.next().find('span.center').text(value);
+				}
+			} else {
+				lower = toDp(toNearest(confine(value[0], opt.min, opt.max), opt.stepSize), opt.precision);
+				upper = toDp(toNearest(confine(value[1], opt.min, opt.max), opt.stepSize), opt.precision);
+
+				input.val(lower + ',' + upper);
+
+				if(opt.showValues) {
+					input.next().find('span.center').html(lower + ' &#8211; ' + upper);
+				}
 			}
 
 			return value;
@@ -146,6 +167,16 @@
 			if(input.val().length) {
 				opt.defaultValue = toNearest(confine(input.val(), opt.min, opt.max), opt.stepSize);
 			}
+
+			if(input.data('msrange')) {
+				opt.range = true;
+
+				if(input.val().length) {
+					var values = input.val().split(',');
+
+					opt.defaultValue = [ toNearest(confine(parseInt(values[0]), opt.min, opt.max), opt.stepSize), toNearest(confine(parseInt(values[1]), opt.min, opt.max), opt.stepSize) ];
+				}
+			}
 		};
 
 		var init = function(input, opt, html) {
@@ -174,9 +205,26 @@
 			// Append markup to document
 			input.addClass('mrslyde').after(html);
 
-			// Set handle to initial position, and value display
-			setValue(input.data('ms').defaultValue, input);
-			positionFromValue(input.val(), input.next());
+			if(opt.range) {
+				var values = input.val().split(',');
+
+				html.find('span.left, span.right').hide();
+				html.addClass('range');
+
+				// Add second handle
+				var handle = html.find('.handle');
+				var newHandle = handle.clone().addClass('range-upper');
+
+				handle.after(newHandle).addClass('range-lower');
+
+				setValue(input.data('ms').defaultValue, input);
+				positionFromValue(values[0], input.next(), handle);
+				positionFromValue(values[1], input.next(), newHandle);
+			} else {
+				// Set handle to initial position, and value display
+				setValue(input.data('ms').defaultValue, input);
+				positionFromValue(input.val(), input.next());
+			}
 		};
 
 		// Unbind events to prevent duplicates
@@ -189,22 +237,33 @@
 			if(elem.is('.handle')) {
 				elem.closest('div.mrslyde').addClass('slyding');
 
+				elem.addClass('mousedown');
+
 				// Add class to <html>
 				$('html').addClass('slyding');
 			}
 		});
 		$('body').on('mousemove', function(e) {
 			var container = $('div.mrslyde.slyding');
+			var input = container.prev();
+			var opt = input.data('ms');
 
 			// Position handle and set value
 			if(container.length) {
-				var norm = positionFromMouse(container, container.prev().data('ms'), e.pageX);
+				positionFromMouse(container, opt, e.pageX, container.find('.mousedown'));
 
-				setValue(valueFromNormalised(norm, container.prev()), container.prev());
+				if(opt.range) {
+					var lower = valueFromNormalised(normalisedFromPosition(container.find('.range-lower')), input);
+					var upper = valueFromNormalised(normalisedFromPosition(container.find('.range-upper')), input);
+
+					setValue([ lower, upper ], input);
+				} else {
+					setValue(valueFromNormalised(normalisedFromPosition(container.find('.handle')), input), input);
+				}
 			}
 		});
 		$('body').on('mouseup', function() {
-			$('div.mrslyde.slyding').removeClass('slyding');
+			$('div.mrslyde.slyding').removeClass('slyding').find('.mousedown').removeClass('mousedown');
 			$('html').removeClass('slyding');
 		});
 		$('body').on('change', 'input.mrslyde', function() {
