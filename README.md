@@ -70,9 +70,14 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 # TODO
 
-- Minified version
+- Range slider
 
-### Finished Sat 17th Dec 2:03PM GMT
+### Added Thu 18th Jul 2013
+
+- Minified version
+- Grunt build script
+
+### Added Sat 17th Dec 2012
 
 - Handle snapping
 - Code optimisations (it runs well at present, but I'd like it to run faster)
