@@ -74,10 +74,10 @@
 			var handle = el !== undefined ? el : container.find('.handle').first();
 			var handleWidth = handle.outerWidth();
 			var track = handle.nextAll('.track');
-			var trackWidth = track.outerWidth() - handleWidth;
+			var trackWidth = track[0].offsetWidth - handleWidth;
 
 			var minLeft = track.offset().left + (handleWidth / 2);
-			var maxLeft = minLeft + track.outerWidth() - handleWidth;
+			var maxLeft = minLeft + track[0].offsetWidth - handleWidth;
 
 			var offset = confine(pagex, minLeft, maxLeft) - minLeft;
 
@@ -119,9 +119,9 @@
 
 		var checkCollisions = function(thisHandle, thatHandle, pagex) {
 			var isFirst = thisHandle.index() === 0;
-			var handleWidth = thisHandle.outerWidth();
+			var handleWidth = thisHandle[0].offsetWidth;
 			var track = thisHandle.nextAll('.track');
-			var trackWidth = track.outerWidth() - handleWidth;
+			var trackWidth = track[0].offsetWidth - handleWidth;
 
 			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
 			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
@@ -133,7 +133,7 @@
 			var track = leftHandle.nextAll('.track');
 			var bar = track.children();
 
-			bar.css({ left: leftHandle.position().left + leftHandle.outerWidth(), right: track.width() - rightHandle.position().left });
+			bar.css({ left: leftHandle.position().left + leftHandle[0].offsetWidth, right: track.width() - rightHandle.position().left });
 		}
 
 		var configure = function(input, opt) {
