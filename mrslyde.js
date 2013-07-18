@@ -128,6 +128,18 @@
 			return value;
 		}
 
+		var checkCollisions = function(thisHandle, thatHandle, pagex) {
+			var isFirst = thisHandle.index() === 0;
+			var handleWidth = thisHandle.outerWidth();
+			var track = thisHandle.nextAll('.track');
+			var trackWidth = track.outerWidth() - handleWidth;
+
+			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
+			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
+
+			thisHandle.css({ left: confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left });
+		}
+
 		var configure = function(input, opt) {
 			if(input.data('msstepsize')) {
 				opt.stepSize = input.data('msstepsize');
@@ -232,7 +244,7 @@
 			var elem = $(e.target);
 
 			if(elem.is('.handle')) {
-				elem.closest('div.mrslyde').addClass('slyding');
+				elem.closest('div.mrslyde').addClass('slyding').prev().trigger('slydestart');
 
 				elem.addClass('mousedown');
 
@@ -244,12 +256,16 @@
 			var container = $('div.mrslyde.slyding');
 			var input = container.prev();
 			var opt = input.data('ms');
+			var handle = container.find('.mousedown');
 
 			// Position handle and set value
 			if(container.length) {
-				positionFromMouse(container, opt, e.pageX, container.find('.mousedown'));
+				positionFromMouse(container, opt, e.pageX, handle);
 
 				if(opt.range) {
+					// Check for handle collisions and react accordingly
+					checkCollisions(handle, container.find('.handle').not('.mousedown'), e.pageX);
+
 					var lower = valueFromNormalised(normalisedFromPosition(container.find('.range-lower')), input);
 					var upper = valueFromNormalised(normalisedFromPosition(container.find('.range-upper')), input);
 
@@ -260,8 +276,12 @@
 			}
 		});
 		$('body').on('mouseup', function() {
-			$('div.mrslyde.slyding').removeClass('slyding').find('.mousedown').removeClass('mousedown');
+			var container = $('div.mrslyde.slyding');
+
+			container.removeClass('slyding').find('.mousedown').removeClass('mousedown');
 			$('html').removeClass('slyding');
+
+			container.prev().trigger('slydeend');
 		});
 		$('body').on('change', 'input.mrslyde', function() {
 			positionFromValue(setValue($(this).val(), $(this)), $(this).next());
