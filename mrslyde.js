@@ -44,8 +44,7 @@
 		}
 
 		var toDp = function(value, numDp) {
-			value = parseFloat(value);
-			return value.toFixed(numDp);
+			return parseFloat(value).toFixed(numDp);
 		}
 
 		// Set handle's position from value given. Return left offset.
@@ -56,9 +55,7 @@
 			var trackWidth = track.outerWidth() - handle.outerWidth();
 			var leftOffs = track.offset().left;
 
-			console.log(trackWidth);
-
-			var xPosition = (trackWidth * ((value - opt.min) / (opt.max - opt.min)));
+			var xPosition = trackWidth * ((value - opt.min) / (opt.max - opt.min));
 
 			handle.css({ left: xPosition });
 
