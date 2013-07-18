@@ -25,13 +25,10 @@
 
 		var markup = $('<div class="mrslyde">\
 			<div class="slider">\
-				<a class="handle"></a>\
-				<div class="track"></div>\
+				<a class="handle"></a><div class="track"></div>\
 			</div>\
 			<div class="values">\
-				<span class="left"></span>\
-				<span class="center"></span>\
-				<span class="right"></span>\
+				<span class="left"></span><span class="center"></span><span class="right"></span>\
 			</div>\
 		</div>');
 
@@ -53,7 +50,6 @@
 			var handle = el !== undefined ? el : container.find('.handle');
 			var track = container.find('.track');
 			var trackWidth = track.outerWidth() - handle.outerWidth();
-			var leftOffs = track.offset().left;
 
 			var xPosition = trackWidth * ((value - opt.min) / (opt.max - opt.min));
 
@@ -64,20 +60,13 @@
 
 		var valueFromNormalised = function(normalised, input) {
 			var opt = input.data('ms');
-			var value = opt.min + ((opt.max - opt.min) * normalised);
-			
-			return value;
+
+			return opt.min + ((opt.max - opt.min) * normalised);
 		}
 
 		// Get normalised value from the position of a handle
 		var normalisedFromPosition = function(handle) {
-			var handleWidth = handle.outerWidth();
-			var track = handle.nextAll('.track');
-			var trackWidth = track.outerWidth() - handleWidth;
-
-			var offset = handle.offset().left - track.offset().left;
-
-			return offset / trackWidth;
+			return handle.position().left / (handle.nextAll('.track').outerWidth() - handle.outerWidth());
 		}
 
 		// Set position of handle from mouse position
@@ -141,9 +130,10 @@
 		}
 
 		var setRangeBar = function(leftHandle, rightHandle) {
-			var bar = leftHandle.nextAll('.track').children();
+			var track = leftHandle.nextAll('.track');
+			var bar = track.children();
 
-			bar.css({ left: leftHandle.position().left, width: rightHandle.position().left - leftHandle.position().left });
+			bar.css({ left: leftHandle.position().left + leftHandle.outerWidth(), right: track.width() - rightHandle.position().left });
 		}
 
 		var configure = function(input, opt) {
@@ -265,7 +255,7 @@
 				$('html').addClass('slyding');
 			}
 		});
-		$('body').on('mousemove', function(e) {
+		$(document).on('mousemove', 'html.slyding', function(e) {
 			var container = $('div.mrslyde.slyding');
 			var input = container.prev();
 			var opt = input.data('ms');
@@ -276,13 +266,16 @@
 				positionFromMouse(container, opt, e.pageX, handle);
 
 				if(opt.range) {
+					var rangeUpper = container.find('.range-upper');
+					var rangeLower = container.find('.range-lower');
+
 					// Check for handle collisions and react accordingly
 					checkCollisions(handle, container.find('.handle').not('.mousedown'), e.pageX);
 
-					setRangeBar(container.find('.range-lower'), container.find('.range-upper'));
+					setRangeBar(rangeLower, rangeUpper);
 
-					var lower = valueFromNormalised(normalisedFromPosition(container.find('.range-lower')), input);
-					var upper = valueFromNormalised(normalisedFromPosition(container.find('.range-upper')), input);
+					var lower = valueFromNormalised(normalisedFromPosition(rangeLower), input);
+					var upper = valueFromNormalised(normalisedFromPosition(rangeUpper), input);
 
 					setValue([ lower, upper ], input);
 				} else {
