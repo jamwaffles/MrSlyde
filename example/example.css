@@ -38,6 +38,7 @@ div.mrslyde .handle {
 	margin-top: -3px;
 	background: #fff;
 	cursor: pointer;
+	z-index: 2;
 }
 
 /* Value displays */
@@ -62,13 +63,16 @@ div.mrslyde span.right {
 }
 
 /* Range slider */
-div.mrslyde.range {
-	
-}
-
 div.mrslyde.range .values .center {
 	display: block;
 	float: none;
 	width: auto;
 	text-align: center;
 } 
+
+div.mrslyde .range-bar {
+	background: red;
+	height: 10px;
+	position: absolute;
+	z-index: 1;
+}

@@ -140,6 +140,12 @@
 			thisHandle.css({ left: confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left });
 		}
 
+		var setRangeBar = function(leftHandle, rightHandle) {
+			var bar = leftHandle.nextAll('.track').children();
+
+			bar.css({ left: leftHandle.position().left, width: rightHandle.position().left - leftHandle.position().left });
+		}
+
 		var configure = function(input, opt) {
 			if(input.data('msstepsize')) {
 				opt.stepSize = input.data('msstepsize');
@@ -220,6 +226,9 @@
 				html.find('span.left, span.right').hide();
 				html.addClass('range');
 
+				// Add range div thingy (shown between handles)
+				html.find('.track').append($('<div />').addClass('range-bar'));
+
 				// Add second handle
 				var handle = html.find('.handle');
 				var newHandle = handle.clone().addClass('range-upper');
@@ -229,6 +238,8 @@
 				setValue(input.data('ms').defaultValue, input);
 				positionFromValue(values[0], input.next(), handle);
 				positionFromValue(values[1], input.next(), newHandle);
+
+				setRangeBar(handle, newHandle);
 			} else {
 				// Set handle to initial position, and value display
 				setValue(input.data('ms').defaultValue, input);
@@ -242,7 +253,7 @@
 		// Bind events
 		$('body').on('mousedown', function(e) {
 			e.preventDefault();
-			
+
 			var elem = $(e.target);
 
 			if(elem.is('.handle')) {
@@ -267,6 +278,8 @@
 				if(opt.range) {
 					// Check for handle collisions and react accordingly
 					checkCollisions(handle, container.find('.handle').not('.mousedown'), e.pageX);
+
+					setRangeBar(container.find('.range-lower'), container.find('.range-upper'));
 
 					var lower = valueFromNormalised(normalisedFromPosition(container.find('.range-lower')), input);
 					var upper = valueFromNormalised(normalisedFromPosition(container.find('.range-upper')), input);
