@@ -25,7 +25,7 @@
 
 		var markup = $('<div class="mrslyde">\
 			<div class="slider">\
-				<div class="handle"></div>\
+				<a class="handle"></a>\
 				<div class="track"></div>\
 			</div>\
 			<div class="values">\
@@ -50,8 +50,8 @@
 		// Set handle's position from value given. Return left offset.
 		var positionFromValue = function(value, container, el) {
 			var opt = container.prev().data('ms');
-			var handle = el !== undefined ? el : container.find('div.handle');
-			var track = container.find('div.track');
+			var handle = el !== undefined ? el : container.find('.handle');
+			var track = container.find('.track');
 			var trackWidth = track.outerWidth() - handle.outerWidth();
 			var leftOffs = track.offset().left;
 
@@ -82,7 +82,7 @@
 
 		// Set position of handle from mouse position
 		var positionFromMouse = function(container, opt, pagex, el) {
-			var handle = el !== undefined ? el : container.find('div.handle').first();
+			var handle = el !== undefined ? el : container.find('.handle').first();
 			var handleWidth = handle.outerWidth();
 			var track = handle.nextAll('.track');
 			var trackWidth = track.outerWidth() - handleWidth;
@@ -203,7 +203,7 @@
 
 			// Set CSS
 			html.width(input.outerWidth());
-			html.find('div.handle').css({ left: html.offset().left });
+			html.find('.handle').css({ left: html.offset().left });
 
 			// Stop autocomplete
 			input.attr('autocomplete', 'off');
@@ -241,6 +241,8 @@
 
 		// Bind events
 		$('body').on('mousedown', function(e) {
+			e.preventDefault();
+			
 			var elem = $(e.target);
 
 			if(elem.is('.handle')) {

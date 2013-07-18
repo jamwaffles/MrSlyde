@@ -30,7 +30,7 @@ div.mrslyde div.track {
 }
 
 /* Handle style */
-div.mrslyde div.handle {
+div.mrslyde .handle {
 	border: 1px solid #76a7dc;
 	position: absolute;
 	height: 16px;
