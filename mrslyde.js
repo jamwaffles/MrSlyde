@@ -241,7 +241,7 @@
 		$('body').off('.mrslyde');
 
 		// Bind events
-		$('body').on('mousedown', function(e) {
+		$('body').on('mousedown touchstart', function(e) {
 			e.preventDefault();
 
 			var elem = $(e.target);
@@ -255,7 +255,7 @@
 				$('html').addClass('slyding');
 			}
 		});
-		$(document).on('mousemove', 'html.slyding', function(e) {
+		$(document).on('mousemove touchmove', 'html.slyding', function(e) {
 			var container = $('div.mrslyde.slyding');
 			var input = container.prev();
 			var opt = input.data('ms');
@@ -283,7 +283,7 @@
 				}
 			}
 		});
-		$('body').on('mouseup', function() {
+		$('body').on('mouseup touchend', function() {
 			var container = $('div.mrslyde.slyding');
 
 			container.removeClass('slyding').find('.mousedown').removeClass('mousedown');
