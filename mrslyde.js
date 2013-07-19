@@ -10,6 +10,7 @@
 
 (function($) {
 	$.fn.mrslyde = function(options) {
+		var focusedSlider = null;
 
 		// Create some values, extending them with any options that were provided
 		var settings = $.extend( {
@@ -49,18 +50,11 @@
 			var opt = container.prev().data('ms');
 			var handle = el !== undefined ? el : container.find('.handle');
 			var track = container.find('.track');
-			var trackWidth = track.outerWidth() - handle.outerWidth();
 
-			var xPosition = trackWidth * ((value - opt.min) / (opt.max - opt.min));
-
-			handle.css({ left: xPosition });
-
-			return xPosition;
+			return handle[0].style.left = (track[0].offsetWidth - handle[0].offsetWidth) * ((value - opt.min) / (opt.max - opt.min));
 		}
 
-		var valueFromNormalised = function(normalised, input) {
-			var opt = input.data('ms');
-
+		var valueFromNormalised = function(normalised, opt) {
 			return opt.min + ((opt.max - opt.min) * normalised);
 		}
 
@@ -86,16 +80,14 @@
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			handle.css({ left: offset });
+			handle[0].style.left = offset;
 
 			return offset / trackWidth;
 		}
 
 		// Set value display's text to slider value, nothing more
-		var setValue = function(value, input) {
-			var opt = input.data('ms');
-			
-			if(typeof value != "object") {
+		var setValue = function(value, input, opt) {
+			if(typeof value !== "object") {
 				value = toDp(toNearest(confine(value, opt.min, opt.max), opt.stepSize), opt.precision);
 
 				input.val(value);
@@ -126,14 +118,15 @@
 			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
 			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
 
-			thisHandle.css({ left: confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left });
+			thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
 		}
 
 		var setRangeBar = function(leftHandle, rightHandle) {
 			var track = leftHandle.nextAll('.track');
 			var bar = track.children();
 
-			bar.css({ left: leftHandle.position().left + leftHandle[0].offsetWidth, right: track.width() - rightHandle.position().left });
+			bar[0].style.left = leftHandle.position().left + leftHandle[0].offsetWidth;
+			bar[0].style.right = track.width() - rightHandle.position().left;
 		}
 
 		var configure = function(input, opt) {
@@ -225,14 +218,14 @@
 
 				handle.after(newHandle).addClass('range-lower');
 
-				setValue(input.data('ms').defaultValue, input);
+				setValue(opt.defaultValue, input, opt);
 				positionFromValue(values[0], input.next(), handle);
 				positionFromValue(values[1], input.next(), newHandle);
 
 				setRangeBar(handle, newHandle);
 			} else {
 				// Set handle to initial position, and value display
-				setValue(input.data('ms').defaultValue, input);
+				setValue(opt.defaultValue, input, opt);
 				positionFromValue(input.val(), input.next());
 			}
 		};
@@ -244,10 +237,19 @@
 		$('body').on('mousedown touchstart', function(e) {
 			var elem = $(e.target);
 
-			if(elem.is('.handle')) {
+			if(elem.hasClass('handle')) {
 				e.preventDefault();
+
+				// Cache container
+				focusedSlider = {
+					input: elem.closest('.mrslyde').prev(),
+					container: elem.closest('.mrslyde'),
+					handle: elem
+				};
+				focusedSlider.opt = focusedSlider.input.data('ms');
 				
-				elem.closest('div.mrslyde').addClass('slyding').prev().trigger('slydestart');
+				focusedSlider.container.addClass('slyding');
+				focusedSlider.input.trigger('slydestart');
 
 				elem.addClass('mousedown');
 
@@ -261,49 +263,67 @@
 			}
 		});
 
-		$(document).on('mousemove touchmove', 'html.slyding', function(e) {
-			var container = $('div.mrslyde.slyding');
-			var input = container.prev();
-			var opt = input.data('ms');
-			var handle = container.find('.mousedown');
+		if(document.addEventListener !== undefined) {
+			document.addEventListener('mousemove', onMove, false);
+			document.addEventListener('touchmove', onMove, false);
+		} else if(document.attachEvent) {
+			document.attachEvent('onmousemove', onMove);
+		}
 
-			var pageX = e.originalEvent.changedTouches !== undefined ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+		function onMove(e) {
+			if(document.documentElement.className.indexOf('slyding') > -1) {
+				(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
 
-			// Position handle and set value
-			if(container.length) {
-				positionFromMouse(container, opt, pageX, handle);
+				var opt = focusedSlider.opt;
+				var handle = focusedSlider.handle;
+				var container = focusedSlider.container;
+				var input = focusedSlider.input;
 
-				if(opt.range) {
-					var rangeUpper = container.find('.range-upper');
-					var rangeLower = container.find('.range-lower');
+				var pageX = e.pageX || e.clientX || event.touches[0].pageX;
 
-					// Check for handle collisions and react accordingly
-					checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
+				// Position handle and set value
+				if(container !== null) {
+					positionFromMouse(container, opt, pageX, handle);
 
-					setRangeBar(rangeLower, rangeUpper);
+					if(opt.range) {
+						var rangeUpper = container.find('.range-upper');
+						var rangeLower = container.find('.range-lower');
 
-					var lower = valueFromNormalised(normalisedFromPosition(rangeLower), input);
-					var upper = valueFromNormalised(normalisedFromPosition(rangeUpper), input);
+						// Check for handle collisions and react accordingly
+						checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
 
-					setValue([ lower, upper ], input);
-				} else {
-					setValue(valueFromNormalised(normalisedFromPosition(container.find('.handle')), input), input);
+						setRangeBar(rangeLower, rangeUpper);
+
+						var lower = valueFromNormalised(normalisedFromPosition(rangeLower), opt);
+						var upper = valueFromNormalised(normalisedFromPosition(rangeUpper), opt);
+
+						setValue([ lower, upper ], focusedSlider.input, opt);
+					} else {
+						setValue(valueFromNormalised(normalisedFromPosition(container.find('.handle')), opt), input, opt);
+					}
 				}
 			}
-		});
+		}
+
 		$('body').on('mouseup touchend', function() {
-			var container = $('div.mrslyde.slyding');
-			var handle = container.find('.mousedown');
+			if(focusedSlider === null) {
+				return false;
+			}
+			
+			var container = focusedSlider.container;
+			var handle = focusedSlider.handle;
 
 			container.removeClass('slyding');
 			handle.removeClass('mousedown touch');
 
 			$('html').removeClass('slyding');
 
-			container.prev().trigger('slydeend');
+			focusedSlider.input.trigger('slydeend');
+
+			focusedSlider = null;
 		});
 		$('body').on('change', 'input.mrslyde', function() {
-			positionFromValue(setValue($(this).val(), $(this)), $(this).next());
+			positionFromValue(setValue($(this).val(), $(this), $(this).data('ms')), $(this).next());
 		});
 
 		return this.each(function() {
