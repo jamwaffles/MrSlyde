@@ -1,8 +1,6 @@
 # MrSlyde
 
-MrSlyde is a lightweight jQuery slider plugin. It is designed to be easily stylable with CSS, and seamlessly integrate with the `<input>` it is bound to.
-
-**MrSlyde requires jQuery 1.7 or higher, as it uses the `$.on()` and `$.off()` functions intriduced in this version.**
+MrSlyde is a lightweight jQuery (1.7+) slider plugin. It is designed to be easily stylable with CSS, and seamlessly integrate with the `<input>` it is bound to.
 
 # Usage
 
@@ -72,11 +70,11 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 - Rewrite
 - Vertical slider
-- Optimisations
 
 ### Added Fri 19th Jul 2013
 
 - Touch support
+- Heavy optimisations
 
 ### Added Thu 18th Jul 2013
 
