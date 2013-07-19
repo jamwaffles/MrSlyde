@@ -75,7 +75,6 @@
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			// handle[0].style.left = offset;
 			return offset;
 		}
 
@@ -118,10 +117,10 @@
 
 		var setRangeBar = function(leftHandle, rightHandle) {
 			var track = leftHandle.nextAll('.track');
-			var bar = track.children();
+			var bar = track.children()[0];
 
-			bar[0].style.left = leftHandle.position().left + leftHandle[0].offsetWidth - leftHandle.width() / 2;
-			bar[0].style.right = track.width() - rightHandle.position().left - rightHandle.width() / 2;
+			bar.style.left = leftHandle.position().left + leftHandle[0].offsetWidth / 2;
+			bar.style.right = track.width() - rightHandle.position().left - rightHandle[0].offsetWidth / 2;
 		}
 
 		var configure = function(input, opt) {
