@@ -22,11 +22,14 @@ div.mrslyde {
 	*display: inline;
 }
 
+div.mrslyde div.slider {
+	padding: 3px 0;
+}
+
 /* Track style */
 div.mrslyde div.track {
 	border: 1px solid #333;
 	height: 10px;
-	margin: 3px 0px;
 	background: #fff;
 }
 
