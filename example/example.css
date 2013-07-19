@@ -1,7 +1,9 @@
 /* Only for demo */
-body {
-	padding: 100px;
+body, html {
+	padding: 10px !important;
 	font-family: 'Ubuntu', 'Segoe UI', sans-serif;
+	overflow: visible;
+	height: 1000px;
 }
 
 /* It is imperitive you put this in your CSS somewhere - it stops things being selected when a handle is being dragged */
@@ -43,6 +45,20 @@ div.mrslyde .handle {
 
 div.mrslyde .handle:hover, div.mrslyde .handle.mousedown {
 	border-color: #666;
+}
+div.mrslyde .handle.mousedown.touch {
+	&:before {
+		content: "";
+		position: absolute;
+		left: -25px;
+		top: -25px;
+		right: -25px;
+		bottom: -25px;
+		background: #000;
+		opacity: 0.3;
+
+		border-radius: 100%;
+	}
 }
 
 /* Value displays */

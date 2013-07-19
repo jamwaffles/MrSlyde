@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 1.1                                *
+ * MrSlyde 0.3.0                                *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
@@ -242,14 +242,19 @@
 
 		// Bind events
 		$('body').on('mousedown touchstart', function(e) {
-			e.preventDefault();
-
 			var elem = $(e.target);
 
 			if(elem.is('.handle')) {
+				e.preventDefault();
+				
 				elem.closest('div.mrslyde').addClass('slyding').prev().trigger('slydestart');
 
 				elem.addClass('mousedown');
+
+				// If this is a touch event, add a bubble to show marker position under finger. Woop woop!
+				if(e.type === 'touchstart') {
+					elem.addClass('touch');
+				}
 
 				// Add class to <html>
 				$('html').addClass('slyding');
@@ -288,8 +293,11 @@
 		});
 		$('body').on('mouseup touchend', function() {
 			var container = $('div.mrslyde.slyding');
+			var handle = container.find('.mousedown');
 
-			container.removeClass('slyding').find('.mousedown').removeClass('mousedown');
+			container.removeClass('slyding');
+			handle.removeClass('mousedown touch');
+
 			$('html').removeClass('slyding');
 
 			container.prev().trigger('slydeend');
