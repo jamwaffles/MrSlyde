@@ -80,9 +80,8 @@
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			handle[0].style.left = offset;
-
-			return offset / trackWidth;
+			// handle[0].style.left = offset;
+			return offset;
 		}
 
 		// Set value display's text to slider value, nothing more
@@ -90,7 +89,7 @@
 			if(typeof value !== "object") {
 				value = toDp(toNearest(confine(value, opt.min, opt.max), opt.stepSize), opt.precision);
 
-				input.val(value);
+				input[0].value = value;
 
 				if(opt.showValues) {
 					input.next().find('span.center').text(value);
@@ -99,7 +98,7 @@
 				lower = toDp(toNearest(confine(value[0], opt.min, opt.max), opt.stepSize), opt.precision);
 				upper = toDp(toNearest(confine(value[1], opt.min, opt.max), opt.stepSize), opt.precision);
 
-				input.val(lower + ',' + upper);
+				input[0].value = lower + ',' + upper;
 
 				if(opt.showValues) {
 					input.next().find('span.center').html(lower + ' &#8211; ' + upper);
@@ -118,7 +117,8 @@
 			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
 			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
 
-			thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
+			// thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
+			return confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
 		}
 
 		var setRangeBar = function(leftHandle, rightHandle) {
@@ -283,14 +283,11 @@
 
 				// Position handle and set value
 				if(container !== null) {
-					positionFromMouse(container, opt, pageX, handle);
-
 					if(opt.range) {
+						handle[0].style.left = checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
+
 						var rangeUpper = container.find('.range-upper');
 						var rangeLower = container.find('.range-lower');
-
-						// Check for handle collisions and react accordingly
-						checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
 
 						setRangeBar(rangeLower, rangeUpper);
 
@@ -299,6 +296,8 @@
 
 						setValue([ lower, upper ], focusedSlider.input, opt);
 					} else {
+						handle[0].style.left = positionFromMouse(container, opt, pageX, handle);
+
 						setValue(valueFromNormalised(normalisedFromPosition(container.find('.handle')), opt), input, opt);
 					}
 				}
