@@ -72,6 +72,11 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 - Rewrite
 - Vertical slider
+- Optimisations
+
+### Added Fri 19th Jul 2013
+
+- Touch support
 
 ### Added Thu 18th Jul 2013
 

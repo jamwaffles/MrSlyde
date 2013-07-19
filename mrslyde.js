@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 1.1                                *
+ * MrSlyde 0.3.0                                *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
@@ -241,36 +241,44 @@
 		$('body').off('.mrslyde');
 
 		// Bind events
-		$('body').on('mousedown', function(e) {
-			e.preventDefault();
-
+		$('body').on('mousedown touchstart', function(e) {
 			var elem = $(e.target);
 
 			if(elem.is('.handle')) {
+				e.preventDefault();
+				
 				elem.closest('div.mrslyde').addClass('slyding').prev().trigger('slydestart');
 
 				elem.addClass('mousedown');
+
+				// If this is a touch event, add a bubble to show marker position under finger. Woop woop!
+				if(e.type === 'touchstart') {
+					elem.addClass('touch');
+				}
 
 				// Add class to <html>
 				$('html').addClass('slyding');
 			}
 		});
-		$(document).on('mousemove', 'html.slyding', function(e) {
+
+		$(document).on('mousemove touchmove', 'html.slyding', function(e) {
 			var container = $('div.mrslyde.slyding');
 			var input = container.prev();
 			var opt = input.data('ms');
 			var handle = container.find('.mousedown');
 
+			var pageX = e.originalEvent.changedTouches !== undefined ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+
 			// Position handle and set value
 			if(container.length) {
-				positionFromMouse(container, opt, e.pageX, handle);
+				positionFromMouse(container, opt, pageX, handle);
 
 				if(opt.range) {
 					var rangeUpper = container.find('.range-upper');
 					var rangeLower = container.find('.range-lower');
 
 					// Check for handle collisions and react accordingly
-					checkCollisions(handle, container.find('.handle').not('.mousedown'), e.pageX);
+					checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
 
 					setRangeBar(rangeLower, rangeUpper);
 
@@ -283,10 +291,13 @@
 				}
 			}
 		});
-		$('body').on('mouseup', function() {
+		$('body').on('mouseup touchend', function() {
 			var container = $('div.mrslyde.slyding');
+			var handle = container.find('.mousedown');
 
-			container.removeClass('slyding').find('.mousedown').removeClass('mousedown');
+			container.removeClass('slyding');
+			handle.removeClass('mousedown touch');
+
 			$('html').removeClass('slyding');
 
 			container.prev().trigger('slydeend');
