@@ -255,22 +255,25 @@
 				$('html').addClass('slyding');
 			}
 		});
+
 		$(document).on('mousemove touchmove', 'html.slyding', function(e) {
 			var container = $('div.mrslyde.slyding');
 			var input = container.prev();
 			var opt = input.data('ms');
 			var handle = container.find('.mousedown');
 
+			var pageX = e.originalEvent.changedTouches !== undefined ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+
 			// Position handle and set value
 			if(container.length) {
-				positionFromMouse(container, opt, e.pageX, handle);
+				positionFromMouse(container, opt, pageX, handle);
 
 				if(opt.range) {
 					var rangeUpper = container.find('.range-upper');
 					var rangeLower = container.find('.range-lower');
 
 					// Check for handle collisions and react accordingly
-					checkCollisions(handle, container.find('.handle').not('.mousedown'), e.pageX);
+					checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
 
 					setRangeBar(rangeLower, rangeUpper);
 
