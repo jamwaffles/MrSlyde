@@ -50,10 +50,10 @@
 		// Set handle's position from value given. Return left offset.
 		var positionFromValue = function(value, container, el) {
 			var opt = container.prev().data('ms');
-			var handle = el !== undefined ? el : container.find('.handle');
+			var handle = el !== undefined ? el : container.find('.handle')[0];
 			var track = container.find('.track');
 
-			return handle[0].style.left = (track[0].offsetWidth - handle[0].offsetWidth) * ((value - opt.min) / (opt.max - opt.min));
+			return handle.style.left = (track[0].offsetWidth - handle.offsetWidth) * ((value - opt.min) / (opt.max - opt.min));
 		}
 
 		var valueFromPosition = function(handle, opt) {
@@ -120,8 +120,8 @@
 			var track = leftHandle.nextAll('.track');
 			var bar = track.children()[0];
 
-			bar.style.left = leftHandle.position().left + leftHandle[0].offsetWidth / 2;
-			bar.style.right = track[0].clientWidth - rightHandle.position().left - rightHandle[0].offsetWidth / 2;
+			bar.style.left = (leftHandle.position().left + leftHandle[0].offsetWidth / 2) + 'px';
+			bar.style.right = (track[0].clientWidth - rightHandle.position().left - rightHandle[0].offsetWidth / 2) + 'px';
 		}
 
 		var configure = function(input, opt) {
@@ -187,7 +187,6 @@
 
 			// Set CSS
 			html.width(input.outerWidth());
-			html.find('.handle').css({ left: html.offset().left });
 
 			// Stop autocomplete
 			input.attr('autocomplete', 'off');
@@ -214,14 +213,15 @@
 				handle.after(newHandle).addClass('range-lower');
 
 				setValue(opt.defaultValue, input, opt);
-				positionFromValue(values[0], input.next(), handle);
-				positionFromValue(values[1], input.next(), newHandle);
+
+				handle.css({ left: positionFromValue(values[0], input.next(), handle[0]) });
+				newHandle.css({ left: positionFromValue(values[1], input.next(), newHandle[0]) });
 
 				setRangeBar(handle, newHandle);
 			} else {
 				// Set handle to initial position, and value display
 				setValue(opt.defaultValue, input, opt);
-				positionFromValue(input.val(), input.next());
+				html.find('.handle').css({ left: positionFromValue(input.val(), input.next()) });
 			}
 		};
 
@@ -279,7 +279,7 @@
 				// Position handle and set value
 				if(container !== null) {
 					if(opt.range) {
-						handle[0].style.left = checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
+						handle[0].style.left = checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX) + 'px';
 
 						var rangeUpper = container.find('.range-upper');
 						var rangeLower = container.find('.range-lower');
@@ -291,7 +291,7 @@
 
 						setValue([ lower, upper ], focusedSlider.input, opt);
 					} else {
-						handle[0].style.left = positionFromMouse(container, opt, pageX, handle);
+						handle[0].style.left = positionFromMouse(container, opt, pageX, handle) + 'px';
 
 						setValue(valueFromPosition(container.find('.handle'), opt), input, opt);
 					}
