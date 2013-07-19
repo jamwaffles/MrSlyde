@@ -266,14 +266,14 @@
 
 		function onMove(e) {
 			if(document.documentElement.className.indexOf('slyding') > -1) {
-				(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
 				var opt = focusedSlider.opt;
 				var handle = focusedSlider.handle;
 				var container = focusedSlider.container;
 				var input = focusedSlider.input;
 
-				var pageX = e.pageX || e.clientX || event.touches[0].pageX;
+				var pageX = e.pageX || e.clientX || e.touches[0].pageX;
 
 				// Position handle and set value
 				if(container !== null) {
