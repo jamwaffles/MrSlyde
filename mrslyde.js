@@ -68,11 +68,13 @@
 			var trackWidth = track[0].offsetWidth - handleWidth;
 
 			var posX = confine(pagex - track.offset().left - (handleWidth / 2), 0, trackWidth);
-			var normalised = posX / (trackWidth + handleWidth);
 
+			// Snapping
 			if(opt.snap) {
-				normalised = toNearest(normalised, 1 / ((opt.max - opt.min) / opt.stepSize));
+				posX = toNearest(posX, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
+
+			var normalised = posX / (trackWidth + handleWidth);
 
 			return normalised;
 
