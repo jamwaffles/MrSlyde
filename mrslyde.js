@@ -1,11 +1,12 @@
 /**********************************************
  *                                            *
- * MrSlyde 0.3.0                                *
+ * MrSlyde 0.3.0                              *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
  * http://www.jamwaffles.co.uk/jquery/mrslyde *
  *                                            *
+ * https://github.com/jamwaffles/MrSlyde      *
  **********************************************/
 
 (function($) {
