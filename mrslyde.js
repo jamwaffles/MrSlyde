@@ -54,13 +54,8 @@
 			return handle[0].style.left = (track[0].offsetWidth - handle[0].offsetWidth) * ((value - opt.min) / (opt.max - opt.min));
 		}
 
-		var valueFromNormalised = function(normalised, opt) {
-			return opt.min + ((opt.max - opt.min) * normalised);
-		}
-
-		// Get normalised value from the position of a handle
-		var normalisedFromPosition = function(handle) {
-			return handle.position().left / (handle.nextAll('.track').outerWidth() - handle.outerWidth());
+		var valueFromPosition = function(handle, opt) {
+			return opt.min + ((opt.max - opt.min) * (handle.position().left / (handle.nextAll('.track').outerWidth() - handle.outerWidth())));
 		}
 
 		// Set position of handle from mouse position
@@ -80,9 +75,7 @@
 				offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			handle[0].style.left = offset;
-
-			return offset / trackWidth;
+			return offset;
 		}
 
 		// Set value display's text to slider value, nothing more
@@ -90,7 +83,7 @@
 			if(typeof value !== "object") {
 				value = toDp(toNearest(confine(value, opt.min, opt.max), opt.stepSize), opt.precision);
 
-				input.val(value);
+				input[0].value = value;
 
 				if(opt.showValues) {
 					input.next().find('span.center').text(value);
@@ -99,7 +92,7 @@
 				lower = toDp(toNearest(confine(value[0], opt.min, opt.max), opt.stepSize), opt.precision);
 				upper = toDp(toNearest(confine(value[1], opt.min, opt.max), opt.stepSize), opt.precision);
 
-				input.val(lower + ',' + upper);
+				input[0].value = lower + ',' + upper;
 
 				if(opt.showValues) {
 					input.next().find('span.center').html(lower + ' &#8211; ' + upper);
@@ -118,15 +111,16 @@
 			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
 			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
 
-			thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
+			// thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
+			return confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
 		}
 
 		var setRangeBar = function(leftHandle, rightHandle) {
 			var track = leftHandle.nextAll('.track');
-			var bar = track.children();
+			var bar = track.children()[0];
 
-			bar[0].style.left = leftHandle.position().left + leftHandle[0].offsetWidth;
-			bar[0].style.right = track.width() - rightHandle.position().left;
+			bar.style.left = leftHandle.position().left + leftHandle[0].offsetWidth / 2;
+			bar.style.right = track.width() - rightHandle.position().left - rightHandle[0].offsetWidth / 2;
 		}
 
 		var configure = function(input, opt) {
@@ -283,23 +277,22 @@
 
 				// Position handle and set value
 				if(container !== null) {
-					positionFromMouse(container, opt, pageX, handle);
-
 					if(opt.range) {
+						handle[0].style.left = checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
+
 						var rangeUpper = container.find('.range-upper');
 						var rangeLower = container.find('.range-lower');
 
-						// Check for handle collisions and react accordingly
-						checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX);
-
 						setRangeBar(rangeLower, rangeUpper);
 
-						var lower = valueFromNormalised(normalisedFromPosition(rangeLower), opt);
-						var upper = valueFromNormalised(normalisedFromPosition(rangeUpper), opt);
+						var lower = valueFromPosition(rangeLower, opt);
+						var upper = valueFromPosition(rangeUpper, opt);
 
 						setValue([ lower, upper ], focusedSlider.input, opt);
 					} else {
-						setValue(valueFromNormalised(normalisedFromPosition(container.find('.handle')), opt), input, opt);
+						handle[0].style.left = positionFromMouse(container, opt, pageX, handle);
+
+						setValue(valueFromPosition(container.find('.handle'), opt), input, opt);
 					}
 				}
 			}
