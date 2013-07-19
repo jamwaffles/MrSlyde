@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 0.3.0                                *
+ * MrSlyde 0.3.1                                *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
