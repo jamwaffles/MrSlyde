@@ -113,7 +113,6 @@
 			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
 			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
 
-			// thisHandle[0].style.left = confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
 			return confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
 		}
 
@@ -122,7 +121,7 @@
 			var bar = track.children()[0];
 
 			bar.style.left = leftHandle.position().left + leftHandle[0].offsetWidth / 2;
-			bar.style.right = track.width() - rightHandle.position().left - rightHandle[0].offsetWidth / 2;
+			bar.style.right = track[0].clientWidth - rightHandle.position().left - rightHandle[0].offsetWidth / 2;
 		}
 
 		var configure = function(input, opt) {
