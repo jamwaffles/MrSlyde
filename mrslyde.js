@@ -69,7 +69,7 @@
 
 			var posX = confine(pagex - track.offset().left - (handleWidth / 2), 0, trackWidth);
 
-			return posX / trackWidth;
+			return posX / (trackWidth + handleWidth);
 
 
 			// var minLeft = track.offset().left + (handleWidth / 2);
