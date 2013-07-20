@@ -224,8 +224,8 @@
 
 				setValue(opt.defaultValue, input, opt);
 
-				handle[0].style.left = positionFromValue(values[0], input.next(), handle[0]) + '%';
-				newHandle[0].style.left = positionFromValue(values[1], input.next(), newHandle[0]) + '%';
+				handle.css({ left: positionFromValue(values[0], input.next(), handle[0]) + '%' });
+				newHandle.css({ left: positionFromValue(values[1], input.next(), newHandle[0]) + '%' });
 
 				setRangeBar(handle, newHandle);
 			} else {
