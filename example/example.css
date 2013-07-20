@@ -74,9 +74,21 @@ html.slyding {
 	text-align: center;
 }
 
-.mrslyde-container .values .left {
-	float: left;
+.mrslyde-container .values span {
+	width: 33%;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
 }
+
+.mrslyde-container .values .left {
+	text-align: left;
+}
+
+.mrslyde-container .values .center {
+	text-align: center;
+}
+
 .mrslyde-container .values .right {
-	float: right;
+	text-align: right;
 }
