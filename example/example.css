@@ -48,6 +48,7 @@ html.slyding {
 	background: #fff;
 	top: -4px;
 	z-index: 1;
+	cursor: pointer;
 }
 
 .mrslyde-container .handle:hover, .mrslyde-container .handle.mousedown {
