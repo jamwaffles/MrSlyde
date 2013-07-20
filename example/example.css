@@ -1,6 +1,6 @@
 /* Only for demo */
 body, html {
-	padding: 5px;
+	padding: 10px;
 	margin: 0;
 	font-family: 'Ubuntu', 'Segoe UI', sans-serif;
 }
@@ -14,85 +14,68 @@ html.slyding {
 	user-select: none;
 }
 
-/* Container has to be inline */
-div.mrslyde {
-	display: inline-block;
-	position: relative;
-	zoom: 1;
-	*display: inline;
+.mrslyde-container {
+	width: auto !important;
 }
 
-div.mrslyde div.slider {
-	padding: 3px 0;
-}
-
-/* Track style */
-div.mrslyde div.track {
+.mrslyde-container .track-wrapper {
 	border: 1px solid #333;
 	height: 10px;
+	margin: 3px 0;
 	background: #fff;
+	padding-right: 18px;
 }
 
-/* Handle style */
-div.mrslyde .handle {
+.mrslyde-container .track {
+	height: 10px;
+	position: relative;
+}
+
+.mrslyde-container .range-bar {
+	position: absolute;
+	border-bottom: 2px solid #333;
+	top: 4px;
+	margin-left: 9px;
+}
+
+.mrslyde-container .handle {
+	width: 16px;
+	height: 16px;
+	display: block;
 	border: 1px solid #333;
 	position: absolute;
-	height: 16px;
-	width: 16px;
-	margin-top: -3px;
 	background: #fff;
-	cursor: pointer;
-	z-index: 2;
+	top: -4px;
+	z-index: 1;
 }
 
-div.mrslyde .handle:hover, div.mrslyde .handle.mousedown {
-	border-color: #666;
+.mrslyde-container .handle:hover, .mrslyde-container .handle.mousedown {
+	border-color: #000;
 }
-div.mrslyde .handle.mousedown.touch:before {
+.mrslyde-container .handle.mousedown.touch:before {
 	content: "";
 	position: absolute;
 	left: -25px;
-	top: -25px;
 	right: -25px;
+	top: -25px;
 	bottom: -25px;
 	background: #000;
 	opacity: 0.3;
 
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	-ms-border-radius: 100%;
+	-o-border-radius: 100%;
 	border-radius: 100%;
 }
 
-/* Value displays */
-div.mrslyde span.center {
+.mrslyde-container .values {
 	text-align: center;
-	float: left;
-	width: 33%;
 }
 
-/* Minimum value */
-div.mrslyde span.left {
+.mrslyde-container .values .left {
 	float: left;
-	text-align: left;
-	width: 33%;
 }
-
-/* Maximum value */
-div.mrslyde span.right {
-	float: left;
-	text-align: right;
-	width: 33%;
-}
-
-/* Range slider */
-div.mrslyde.range .values .center {
-	display: block;
-	float: none;
-	width: auto;
-	text-align: center;
-} 
-
-div.mrslyde .range-bar {
-	height: 4px;
-	border-bottom: 2px solid #333;
-	position: absolute;
-	z-index: 1;
+.mrslyde-container .values .right {
+	float: right;
 }

@@ -26,9 +26,11 @@
 			range: false 		// Whether this is a two handled range slider or not
 		}, options);
 
-		var markup = $('<div class="mrslyde">\
-			<div class="slider">\
-				<a class="handle"></a><div class="track"></div>\
+		var markup = $('<div class="mrslyde-container">\
+			<div class="track-wrapper">\
+				<div class="track">\
+					<a href="#" class="handle"></a>\
+				</div>\
 			</div>\
 			<div class="values">\
 				<span class="left"></span><span class="center"></span><span class="right"></span>\
@@ -53,43 +55,30 @@
 			var handle = el !== undefined ? el : container.find('.handle')[0];
 			var track = container.find('.track');
 
-			return handle.style.left = (track[0].offsetWidth - handle.offsetWidth) * ((value - opt.min) / (opt.max - opt.min));
+			var normalised = (value - opt.min) / (opt.max - opt.min);
+
+			return handle.style.left = (normalised * 100) + '%';
 		}
 
 		var valueFromPosition = function(handle, opt) {
-			return opt.min + ((opt.max - opt.min) * (handle.position().left / (handle.nextAll('.track').outerWidth() - handle.outerWidth())));
+			return opt.min + ((opt.max - opt.min) * (handle.position().left / (handle.parent().outerWidth() - handle.outerWidth())));
 		}
 
 		// Return normalised value for handle based on mouse position
-		var positionFromMouse = function(container, opt, pagex, el) {
+		var normalisedFromMouse = function(container, opt, pagex, el) {
 			var handle = el !== undefined ? el : container.find('.handle').first();
 			var handleWidth = handle.outerWidth();
-			var track = handle.nextAll('.track');
-			var trackWidth = track[0].offsetWidth - handleWidth;
+			var track = handle.parent()[0];
+			var trackWidth = track.clientWidth;
 
-			var posX = confine(pagex - track.offset().left - (handleWidth / 2), 0, trackWidth);
+			var posX = confine(pagex - track.offsetLeft - (handleWidth / 2), 0, trackWidth);
 
 			// Snapping
 			if(opt.snap) {
 				posX = toNearest(posX, trackWidth / ((opt.max - opt.min) / opt.stepSize));
 			}
 
-			var normalised = posX / (trackWidth + handleWidth);
-
-			return normalised;
-
-
-			// var minLeft = track.offset().left + (handleWidth / 2);
-			// var maxLeft = minLeft + track[0].offsetWidth - handleWidth;
-
-			// var offset = confine(pagex, minLeft, maxLeft) - minLeft;
-
-			// // Snapping
-			// if(opt.snap) {
-			// 	offset = toNearest(offset, trackWidth / ((opt.max - opt.min) / opt.stepSize));
-			// }
-
-			// return offset;
+			return posX / trackWidth;
 		}
 
 		// Set value display's text to slider value, nothing more
@@ -119,21 +108,30 @@
 		var checkCollisions = function(thisHandle, thatHandle, pagex) {
 			var isFirst = thisHandle.index() === 0;
 			var handleWidth = thisHandle[0].offsetWidth;
-			var track = thisHandle.nextAll('.track');
-			var trackWidth = track[0].offsetWidth - handleWidth;
+			var track = thisHandle.parent();
+			var trackWidth = track[0].clientWidth;
 
-			var rightLimit = isFirst ? thatHandle.offset().left - handleWidth : track.offset().left + trackWidth;
-			var leftLimit = isFirst ? track.offset().left : thatHandle.offset().left + handleWidth;
+			// Work out handlewidth in normalised
+			handleWidth = handleWidth / trackWidth;
 
-			return confine(pagex - handleWidth / 2, leftLimit, rightLimit) - track.offset().left;
+			var leftLimit = 0;
+			var rightLimit = 1;
+
+			if(isFirst) {
+				var rightLimit = parseFloat(thatHandle[0].style.left) / 100 - handleWidth;
+			} else {
+				var leftLimit = parseFloat(thatHandle[0].style.left) / 100 + handleWidth;
+			}
+
+			return confine((pagex - track[0].offsetLeft) / trackWidth - (handleWidth / 2), leftLimit, rightLimit);
 		}
 
 		var setRangeBar = function(leftHandle, rightHandle) {
-			var track = leftHandle.nextAll('.track');
-			var bar = track.children()[0];
+			var track = leftHandle.parent();
+			var bar = track.children('.range-bar')[0];
 
-			bar.style.left = (leftHandle.position().left + leftHandle[0].offsetWidth / 2) + 'px';
-			bar.style.right = (track[0].clientWidth - rightHandle.position().left - rightHandle[0].offsetWidth / 2) + 'px';
+			bar.style.left = leftHandle[0].style.left;
+			bar.style.width = (parseFloat(rightHandle[0].style.left) - parseFloat(leftHandle[0].style.left)) + '%';
 		}
 
 		var configure = function(input, opt) {
@@ -179,7 +177,7 @@
 				if(input.val().length) {
 					var values = input.val().split(',');
 
-					opt.defaultValue = [ toNearest(confine(parseInt(values[0]), opt.min, opt.max), opt.stepSize), toNearest(confine(parseInt(values[1]), opt.min, opt.max), opt.stepSize) ];
+					opt.defaultValue = [ toNearest(confine(parseFloat(values[0]), opt.min, opt.max), opt.stepSize), toNearest(confine(parseFloat(values[1]), opt.min, opt.max), opt.stepSize) ];
 				}
 			}
 		};
@@ -226,8 +224,8 @@
 
 				setValue(opt.defaultValue, input, opt);
 
-				handle.css({ left: positionFromValue(values[0], input.next(), handle[0]) });
-				newHandle.css({ left: positionFromValue(values[1], input.next(), newHandle[0]) });
+				handle[0].style.left = positionFromValue(values[0], input.next(), handle[0]) + '%';
+				newHandle[0].style.left = positionFromValue(values[1], input.next(), newHandle[0]) + '%';
 
 				setRangeBar(handle, newHandle);
 			} else {
@@ -236,9 +234,6 @@
 				html.find('.handle').css({ left: positionFromValue(input.val(), input.next()) });
 			}
 		};
-
-		// Unbind events to prevent duplicates
-		$('body').off('.mrslyde');
 
 		// Bind events
 		$('body').on('mousedown touchstart', function(e) {
@@ -249,12 +244,12 @@
 
 				// Cache container
 				focusedSlider = {
-					input: elem.closest('.mrslyde').prev(),
-					container: elem.closest('.mrslyde'),
+					input: elem.closest('.mrslyde-container').prev(),
+					container: elem.closest('.mrslyde-container'),
 					handle: elem
 				};
 				focusedSlider.opt = focusedSlider.input.data('ms');
-				
+
 				focusedSlider.container.addClass('slyding');
 				focusedSlider.input.trigger('slydestart');
 
@@ -291,7 +286,7 @@
 				// Position handle and set value
 				if(container !== null) {
 					if(opt.range) {
-						handle[0].style.left = checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX) + 'px';
+						handle[0].style.left = (checkCollisions(handle, container.find('.handle').not('.mousedown'), pageX) * 100) + '%';
 
 						var rangeUpper = container.find('.range-upper');
 						var rangeLower = container.find('.range-lower');
@@ -303,8 +298,7 @@
 
 						setValue([ lower, upper ], focusedSlider.input, opt);
 					} else {
-						// handle[0].style.left = positionFromMouse(container, opt, pageX, handle) + 'px';
-						handle[0].style.left = (positionFromMouse(container, opt, pageX, handle) * 100) + '%';
+						handle[0].style.left = (normalisedFromMouse(container, opt, pageX, handle) * 100) + '%';
 
 						setValue(valueFromPosition(container.find('.handle'), opt), input, opt);
 					}
@@ -316,7 +310,7 @@
 			if(focusedSlider === null) {
 				return false;
 			}
-			
+
 			var container = focusedSlider.container;
 			var handle = focusedSlider.handle;
 
