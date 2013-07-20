@@ -29,7 +29,7 @@
 		var markup = $('<div class="mrslyde-container">\
 			<div class="track-wrapper">\
 				<div class="track">\
-					<a href="#" class="handle"></a>\
+					<span href="#" class="handle"></span>\
 				</div>\
 			</div>\
 			<div class="values">\
@@ -61,14 +61,14 @@
 		}
 
 		var valueFromPosition = function(handle, opt) {
-			return opt.min + ((opt.max - opt.min) * (handle.position().left / (handle.parent().outerWidth() - handle.outerWidth())));
+			return opt.min + ((opt.max - opt.min) * (handle.position().left / (handle.parent().parent().outerWidth() - handle.outerWidth())));
 		}
 
 		// Return normalised value for handle based on mouse position
 		var normalisedFromMouse = function(container, opt, pagex, el) {
 			var handle = el !== undefined ? el : container.find('.handle').first();
 			var handleWidth = handle.outerWidth();
-			var track = handle.parent()[0];
+			var track = handle.parent().parent()[0];
 			var trackWidth = track.clientWidth;
 
 			var posX = confine(pagex - track.offsetLeft - (handleWidth / 2), 0, trackWidth);
