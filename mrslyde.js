@@ -80,7 +80,8 @@
 		function positionFromMouse(handle, track, pagex, opt) {
 			var handleWidth = handle.offsetWidth;
 			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
-			var handleNormalised = confine((handleX / track.clientWidth), 0, 1);
+			var normalisedStepSize = 1 / ((opt.max - opt.min) / opt.step);
+			var handleNormalised = confine(toNearest(handleX / track.clientWidth, normalisedStepSize), 0, 1);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
 			$(handle).data('value', handleValue);
@@ -139,12 +140,13 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
+				var handles = focusedSlider.track.children('.mrslyde-handle');
 				var opt = focusedSlider.track.data('mrslyde');
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
 				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt);
 
-				displaySliderValue(focusedSlider.track.children('.mrslyde-handle'), opt);
+				displaySliderValue(handles, opt);
 			}
 		}
 
@@ -199,6 +201,9 @@
 
 		return this.each(function() {
 			var settings = $.extend({}, defaults, getDataOptions($(this)), options);
+
+			settings.min = toNearest(settings.min, settings.step);
+			settings.max = toNearest(settings.max, settings.step);
 
 			settings.value = this.value.split(',');
 
