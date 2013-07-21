@@ -54,7 +54,7 @@ html.slyding {
 .mrslyde-container .handle:hover, .mrslyde-container .handle.mousedown {
 	border-color: #000;
 }
-.mrslyde-container .handle.mousedown.touch:before {
+.mrslyde-container .mrslyde-handle.mousedown.touch:before {
 	content: "";
 	position: absolute;
 	left: -25px;

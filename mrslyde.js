@@ -69,6 +69,8 @@
 		function positionFromValue(handle, value, opt) {
 			var track = $(handle).parent();
 
+			$(handle).data('value', value);
+
 			var normalised = (value - opt.min) / (opt.max - opt.min);
 
 			handle.style.left = (normalised * 100) + '%';
@@ -87,6 +89,18 @@
 			handle.style.left = confine(handlePercentage, 0, 100) + '%';
 
 			return handleValue;
+		}
+
+		function displaySliderValue(handles, opt) {
+			var firstHandle = toDp($(handles[0]).data('value'), opt.precision);
+			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
+			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
+
+			label.html(firstHandle);
+
+			if(handles.length > 1) {
+				label.append(' &#8211; ' + secondHandle);
+			}
 		}
 
 		// Start dragging the handle
@@ -126,9 +140,12 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
+				var opt = focusedSlider.track.data('mrslyde');
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
-				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, focusedSlider.track.data('mrslyde'));
+				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt);
+
+				displaySliderValue(focusedSlider.handle, opt);
 			}
 		}
 
@@ -161,14 +178,24 @@
 				handle.after(newHandle);
 			}
 
+			input.hide().after(html);
+
+			// Set up labels
+			html.find('.left').text(opt.min);
+			html.find('.right').text(opt.max);
+
 			// Store options in slider track
 			handle.parent().data('mrslyde', opt);
 
-			input.after(html);
+			var handles = html.find('.mrslyde-handle');
 
-			html.find('.mrslyde-handle').each(function(index) {
+			handles.each(function(index) {
+				opt.value[index] = confine(opt.value[index], opt.min, opt.max);
+
 				positionFromValue(this, opt.value[index], opt);
 			});
+
+			displaySliderValue(handles, opt);
 		}
 
 		return this.each(function() {
