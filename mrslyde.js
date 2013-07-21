@@ -95,8 +95,6 @@
 			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
 			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
 
-			console.log($(handles[0]).data('value'), $(handles[0]).data('value'), firstHandle, secondHandle);
-
 			label.html(firstHandle);
 
 			if(handles.length > 1) {
@@ -191,7 +189,7 @@
 			var handles = html.find('.mrslyde-handle');
 
 			handles.each(function(index) {
-				opt.value[index] = confine(opt.value[index], opt.min, opt.max);
+				opt.value[index] = confine(parseFloat(opt.value[index]), opt.min, opt.max);
 
 				positionFromValue(this, opt.value[index], opt);
 			});
@@ -203,6 +201,10 @@
 			var settings = $.extend({}, defaults, getDataOptions($(this)), options);
 
 			settings.value = this.value.split(',');
+
+			if(!settings.value[0].length) {
+				settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
+			}
 
 			init($(this), settings);
 		});
