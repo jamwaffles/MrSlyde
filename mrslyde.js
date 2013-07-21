@@ -80,13 +80,12 @@
 		function positionFromMouse(handle, track, pagex, opt) {
 			var handleWidth = handle.offsetWidth;
 			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
-			var handlePercentage = confine((handleX / track.clientWidth) * 100, 0, 100);
-
-			var handleValue = opt.min + (opt.max - opt.min) * handlePercentage;
+			var handleNormalised = confine((handleX / track.clientWidth), 0, 1);
+			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
 			$(handle).data('value', handleValue);
 
-			handle.style.left = confine(handlePercentage, 0, 100) + '%';
+			handle.style.left = (handleNormalised * 100) + '%';
 
 			return handleValue;
 		}
@@ -95,6 +94,8 @@
 			var firstHandle = toDp($(handles[0]).data('value'), opt.precision);
 			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
 			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
+
+			console.log($(handles[0]).data('value'), $(handles[0]).data('value'), firstHandle, secondHandle);
 
 			label.html(firstHandle);
 
@@ -145,7 +146,7 @@
 
 				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt);
 
-				displaySliderValue(focusedSlider.handle, opt);
+				displaySliderValue(focusedSlider.track.children('.mrslyde-handle'), opt);
 			}
 		}
 
