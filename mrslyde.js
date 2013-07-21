@@ -28,7 +28,7 @@
 		var markup = $('<div class="mrslyde-container">\
 			<div class="track-wrapper">\
 				<div class="track">\
-					<span href="#" class="mrslyde-handle"></span>\
+					<span class="mrslyde-handle"></span>\
 				</div>\
 			</div>\
 			<div class="values">\
@@ -74,6 +74,21 @@
 			handle.style.left = (normalised * 100) + '%';
 		}
 
+		// Position handle and store handle's converted value based on mouse position
+		function positionFromMouse(handle, track, pagex, opt) {
+			var handleWidth = handle.offsetWidth;
+			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
+			var handlePercentage = confine((handleX / track.clientWidth) * 100, 0, 100);
+
+			var handleValue = opt.min + (opt.max - opt.min) * handlePercentage;
+
+			$(handle).data('value', handleValue);
+
+			handle.style.left = confine(handlePercentage, 0, 100) + '%';
+
+			return handleValue;
+		}
+
 		// Start dragging the handle
 		$('body').on('mousedown touchstart', function(e) {
 			var elem = $(e.target);
@@ -81,8 +96,20 @@
 			if(elem.hasClass('mrslyde-handle')) {
 				e.preventDefault();
 
+				elem.addClass('mousedown');
+
 				// Add class to <html>
 				$('html').addClass('slyding');
+
+				// Add class to handle if touch enabled
+				if(e.type === 'touchstart') {
+					elem.addClass('touch');
+				}
+
+				focusedSlider = {
+					handle: elem,
+					track: elem.parent()
+				};
 			}
 		});
 
@@ -99,7 +126,9 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
-				
+				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
+
+				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, focusedSlider.track.data('mrslyde'));
 			}
 		}
 
@@ -108,6 +137,8 @@
 			if(focusedSlider === null) {
 				return false;
 			}
+
+			focusedSlider.handle.removeClass('mousedown touch');
 
 			$('html').removeClass('slyding');
 
@@ -121,14 +152,17 @@
 		// Initialise the slider
 		function init(input, opt) {
 			var html = markup.clone();
+			var handle = html.find('.mrslyde-handle');
 
 			// If range slider, clone another handle
 			if(opt.range) {
-				var handle = html.find('.mrslyde-handle');
 				var newHandle = handle.clone();
 
 				handle.after(newHandle);
 			}
+
+			// Store options in slider track
+			handle.parent().data('mrslyde', opt);
 
 			input.after(html);
 
