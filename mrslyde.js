@@ -117,19 +117,17 @@
 			bar.style.width = delta + '%';
 		}
 
-		function setSliderValue(handles, opt, input) {
+		function setSliderValue(handles, opt, input, label) {
 			var firstHandle = toDp($(handles[0]).data('value'), opt.precision);
 			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
-			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
 
-			label.html(firstHandle);
+			label.innerHTML = firstHandle;
 
 			if(handles.length > 1) {
-				label.append(' &#8211; ' + secondHandle);
+				label.innerHTML += ' &#8211; ' + secondHandle;
 			}
 
-			// Set input's value
-			input.value = firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : '');
+			return firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : '');
 		}
 
 		// Start dragging the handle
@@ -152,10 +150,11 @@
 				focusedSlider = {
 					handle: elem,
 					track: elem.parent(),
-					container: elem.closest('.mrslyde-container')
+					container: elem.closest('.mrslyde-container'),
 				};
 				focusedSlider.opt = focusedSlider.track.data('mrslyde');
 				focusedSlider.input = focusedSlider.container.prev();
+				focusedSlider.label = focusedSlider.container.find('.center')[0];
 
 				// Trigger event on input
 				focusedSlider.input.trigger('slydestart');
@@ -185,7 +184,7 @@
 					setRangeBar(focusedSlider.track[0], handles.get(0), handles.get(1));
 				}
 
-				setSliderValue(handles, opt, focusedSlider.input);
+				focusedSlider.input[0].value = setSliderValue(handles, opt, focusedSlider.input, focusedSlider.label);
 
 				// Trigger event
 				focusedSlider.input.trigger('slydechange');
@@ -201,7 +200,7 @@
 			// Trigger event
 			focusedSlider.input.trigger('slydeend');
 
-			focusedSlider.handle.removeClass('mousedown touch');
+			$('.mrslyde-handle').removeClass('mousedown touch');
 
 			$('html').removeClass('slyding');
 
@@ -230,7 +229,7 @@
 			// Set input's value again to confine number range
 			this.value = opt.value.join(',');
 
-			setSliderValue(handles, opt, this);
+			setSliderValue(handles, opt, this, $(this).next().find('.center'));
 		});
 
 		// Initialise the slider
@@ -269,7 +268,7 @@
 				setRangeBar(html.find('.track')[0], handles[0], handles[1]);
 			}
 
-			setSliderValue(handles, opt, input);
+			setSliderValue(handles, opt, input, html.find('.center')[0]);
 		}
 
 		return this.each(function() {
