@@ -78,6 +78,7 @@
 
 		// Position handle and store handle's converted value based on mouse position
 		function positionFromMouse(handle, track, pagex, opt, otherHandle) {
+			var $handle = $(handle);
 			var handleWidth = handle.offsetWidth;
 			var trackWidth = track.clientWidth;
 			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
@@ -89,7 +90,7 @@
 
 			// Limit handle ranges based on other handle's position (collision detection)
 			if(otherHandle !== undefined) {
-				var isFirst = $(handle).index() === 0;
+				var isFirst = $handle.index() === 0;
 
 				if(isFirst) {
 					rightLimit = parseFloat(otherHandle.style.left) / 100 - handleWidthNormalised;
@@ -101,7 +102,7 @@
 			var handleNormalised = confine(toNearest(handleX / trackWidth, normalisedStepSize), leftLimit, rightLimit);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
-			$(handle).data('value', handleValue);
+			$handle.data('value', handleValue);
 
 			handle.style.left = (handleNormalised * 100) + '%';
 
@@ -174,8 +175,6 @@
 		// Called on mouse move event
 		function onMove(e) {
 			if(document.documentElement.className.indexOf('slyding') > -1) {
-				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
-
 				var handles = focusedSlider.handles;
 				var opt = focusedSlider.opt;
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
