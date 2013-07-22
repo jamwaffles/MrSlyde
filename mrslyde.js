@@ -50,14 +50,19 @@
 			return data;
 		}
 
+		// Cache some maths functions to speed stuff up (see http://jsperf.com/cached-math-object)
+		var mathMin = Math.min;
+		var mathMax = Math.max;
+		var mathRound = Math.round;
+
 		// Clamp a value between min and max
 		function confine(value, min, max) {
-			return Math.min(max, Math.max(value, min));
+			return mathMin(max, mathMax(value, min));
 		}
 
 		// Snap a value to the closest multiple of a step
 		function toNearest(value, base) {
-			return Math.round(value / base) * base;
+			return mathRound(value / base) * base;
 		}
 
 		// Convert a number to a fixed number of DP
