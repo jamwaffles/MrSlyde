@@ -173,7 +173,7 @@
 				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt, focusedSlider.handle.siblings('.mrslyde-handle')[0]);
 
 				if(opt.range) {
-					setRangeBar(focusedSlider.track[0], focusedSlider.handle[0], focusedSlider.handle.siblings('.mrslyde-handle')[0]);
+					setRangeBar(focusedSlider.track[0], handles.get(0), handles.get(1));
 				}
 
 				displaySliderValue(handles, opt);
