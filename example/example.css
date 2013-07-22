@@ -5,6 +5,13 @@ body, html {
 	font-family: 'Ubuntu', 'Segoe UI', sans-serif;
 }
 
+.inline-slider {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	width: 150px;
+}
+
 /* It is imperitive you put this in your CSS somewhere - it stops things being selected when a handle is being dragged */
 html.slyding {
 	-webkit-user-select: none;
