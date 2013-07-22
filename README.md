@@ -84,21 +84,26 @@ The event is bound to the base input, so you can retrieve the value using `this.
 
 # TODO
 
-- Rewrite
 - Vertical slider
 
-### Added Fri 19th Jul 2013
+# Changelog
+
+### Fri 22nd Jul 2013
+
+- Rewrite
+
+### Fri 19th Jul 2013
 
 - Touch support
 - Heavy optimisations
 
-### Added Thu 18th Jul 2013
+### Thu 18th Jul 2013
 
 - Range slider
 - Minified version
 - Grunt build script
 
-### Added Sat 17th Dec 2012
+### Sat 17th Dec 2012
 
 - Handle snapping
 - Code optimisations (it runs well at present, but I'd like it to run faster)
