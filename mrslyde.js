@@ -148,10 +148,12 @@
 				}
 
 				focusedSlider = {
-					handle: elem,
+					handle: elem[0],
 					track: elem.parent(),
 					container: elem.closest('.mrslyde-container'),
+					otherHandle: elem.siblings('.mrslyde-handle').first()[0]
 				};
+				focusedSlider.handles = focusedSlider.track.children('.mrslyde-handle').toArray();
 				focusedSlider.opt = focusedSlider.track.data('mrslyde');
 				focusedSlider.input = focusedSlider.container.prev();
 				focusedSlider.label = focusedSlider.container.find('.center')[0];
@@ -174,14 +176,14 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
-				var handles = focusedSlider.track.children('.mrslyde-handle');
+				var handles = focusedSlider.handles;
 				var opt = focusedSlider.opt;
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
-				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt, focusedSlider.handle.siblings('.mrslyde-handle')[0]);
+				positionFromMouse(focusedSlider.handle, focusedSlider.track[0], pageX, opt, focusedSlider.otherHandle);
 
 				if(opt.range) {
-					setRangeBar(focusedSlider.track[0], handles.get(0), handles.get(1));
+					setRangeBar(focusedSlider.track[0], handles[0], handles[1]);
 				}
 
 				focusedSlider.input[0].value = setSliderValue(handles, opt, focusedSlider.input, focusedSlider.label);
