@@ -77,11 +77,28 @@
 		}
 
 		// Position handle and store handle's converted value based on mouse position
-		function positionFromMouse(handle, track, pagex, opt) {
+		function positionFromMouse(handle, track, pagex, opt, otherHandle) {
 			var handleWidth = handle.offsetWidth;
+			var trackWidth = track.clientWidth;
 			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
+			var handleWidthNormalised = handleWidth / trackWidth;
+
+			var leftLimit = 0;
+			var rightLimit = 1;
+
+			// Limit handle ranges based on other handle's position (collision detection)
+			if(otherHandle !== undefined) {
+				var isFirst = $(handle).index() === 0;
+
+				if(isFirst) {
+					rightLimit = parseFloat(otherHandle.style.left) / 100 - handleWidthNormalised;
+				} else {
+					leftLimit = parseFloat(otherHandle.style.left) / 100 + handleWidthNormalised;
+				}
+			}
+
 			var normalisedStepSize = 1 / ((opt.max - opt.min) / opt.step);
-			var handleNormalised = confine(toNearest(handleX / track.clientWidth, normalisedStepSize), 0, 1);
+			var handleNormalised = confine(toNearest(handleX / trackWidth, normalisedStepSize), leftLimit, rightLimit);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
 			$(handle).data('value', handleValue);
@@ -144,7 +161,7 @@
 				var opt = focusedSlider.track.data('mrslyde');
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
-				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt);
+				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt, focusedSlider.handle.siblings('.mrslyde-handle')[0]);
 
 				displaySliderValue(handles, opt);
 			}
