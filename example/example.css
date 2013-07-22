@@ -71,11 +71,11 @@ html.slyding .mrslyde-container .mrslyde-handle.mousedown.touch:before {
 	background: #000;
 	opacity: 0.3;
 
-	-webkit-border-radius: 100%;
-	-moz-border-radius: 100%;
-	-ms-border-radius: 100%;
-	-o-border-radius: 100%;
-	border-radius: 100%;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	-ms-border-radius: 100px;
+	-o-border-radius: 100px;
+	border-radius: 100px;
 }
 
 .mrslyde-container .values {
