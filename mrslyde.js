@@ -83,31 +83,24 @@
 
 		// Position handle and store handle's converted value based on mouse position
 		function positionFromMouse(handle, track, pagex, opt, otherHandle) {
-			var $handle = $(handle);
-			var handleWidth = handle.offsetWidth;
-			var trackWidth = track.clientWidth;
-			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
-			var handleWidthNormalised = handleWidth / trackWidth;
-			var normalisedStepSize = 1 / ((opt.max - opt.min) / opt.step);
-
+			var props = opt.props;
+			var handleX = pagex - track.offsetLeft - (props.handleWidth / 2);
 			var leftLimit = 0;
-			var rightLimit = 1;
+			var rightLimit = 1;		
 
 			// Limit handle ranges based on other handle's position (collision detection)
 			if(otherHandle !== undefined) {
-				var isFirst = $handle.index() === 0;
-
-				if(isFirst) {
-					rightLimit = parseFloat(otherHandle.style.left) / 100 - handleWidthNormalised;
+				if(props.handle.index() === 0) {
+					rightLimit = parseFloat(otherHandle.style.left) / 100 - props.handleWidthNormalised;
 				} else {
-					leftLimit = parseFloat(otherHandle.style.left) / 100 + handleWidthNormalised;
+					leftLimit = parseFloat(otherHandle.style.left) / 100 + props.handleWidthNormalised;
 				}
 			}
 
-			var handleNormalised = confine(toNearest(handleX / trackWidth, normalisedStepSize), leftLimit, rightLimit);
+			var handleNormalised = confine(toNearest(handleX / props.trackWidth, opt.normalisedStepSize), leftLimit, rightLimit);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
-			$handle.data('value', handleValue);
+			props.handle.data('value', handleValue);
 
 			handle.style.left = (handleNormalised * 100) + '%';
 
@@ -153,6 +146,7 @@
 					elem.addClass('touch');
 				}
 
+				// Cache a load of properties so they don't have to be recalculated for every move event
 				focusedSlider = {
 					handle: elem[0],
 					track: elem.parent(),
@@ -163,6 +157,16 @@
 				focusedSlider.opt = focusedSlider.track.data('mrslyde');
 				focusedSlider.input = focusedSlider.container.prev();
 				focusedSlider.label = focusedSlider.container.find('.center')[0];
+
+				// Elements and maths specifically for the move event
+				var props = {
+					handle: elem,
+					handleWidth: elem[0].offsetWidth,
+					trackWidth: focusedSlider.track[0].clientWidth
+				};
+				props.handleWidthNormalised = props.handleWidth / props.trackWidth;
+
+				focusedSlider.opt.props = props;
 
 				// Trigger event on input
 				focusedSlider.input.trigger('slydestart');
@@ -184,7 +188,7 @@
 				var opt = focusedSlider.opt;
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
-				positionFromMouse(focusedSlider.handle, focusedSlider.track[0], pageX, opt, focusedSlider.otherHandle);
+				positionFromMouse(focusedSlider.handle, focusedSlider.track[0], pageX, focusedSlider.opt, focusedSlider.otherHandle);
 
 				if(opt.range) {
 					setRangeBar(focusedSlider.track[0], handles[0], handles[1]);
@@ -288,6 +292,8 @@
 			if(!settings.value[0].length) {
 				settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
 			}
+
+			settings.normalisedStepSize = 1 / ((settings.max - settings.min) / settings.step);
 
 			init($(this), settings);
 		});
