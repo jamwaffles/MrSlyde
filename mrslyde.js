@@ -117,7 +117,7 @@
 			bar.style.width = delta + '%';
 		}
 
-		function displaySliderValue(handles, opt) {
+		function setSliderValue(handles, opt) {
 			var firstHandle = toDp($(handles[0]).data('value'), opt.precision);
 			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
 			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
@@ -127,6 +127,10 @@
 			if(handles.length > 1) {
 				label.append(' &#8211; ' + secondHandle);
 			}
+
+			// Set input's value
+			label.closest('.mrslyde-container').prev().val(firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : ''));
+			console.log(firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : ''));
 		}
 
 		// Start dragging the handle
@@ -145,6 +149,9 @@
 				if(e.type === 'touchstart') {
 					elem.addClass('touch');
 				}
+
+				// Trigger event on input
+				elem.closest('.mrslyde-container').prev().trigger('slydestart');
 
 				focusedSlider = {
 					handle: elem,
@@ -176,7 +183,10 @@
 					setRangeBar(focusedSlider.track[0], handles.get(0), handles.get(1));
 				}
 
-				displaySliderValue(handles, opt);
+				setSliderValue(handles, opt);
+
+				// Trigger event
+				focusedSlider.track.closest('.mrslyde-container').prev().trigger('slydechange');
 			}
 		}
 
@@ -185,6 +195,9 @@
 			if(focusedSlider === null) {
 				return false;
 			}
+
+			// Trigger event
+			focusedSlider.track.closest('.mrslyde-container').prev().trigger('slydeend');
 
 			focusedSlider.handle.removeClass('mousedown touch');
 
@@ -215,7 +228,7 @@
 			// Set input's value again to confine number range
 			this.value = opt.value.join(',');
 
-			displaySliderValue(handles, opt);
+			setSliderValue(handles, opt);
 		});
 
 		// Initialise the slider
@@ -254,7 +267,7 @@
 				setRangeBar(html.find('.track')[0], handles[0], handles[1]);
 			}
 
-			displaySliderValue(handles, opt);
+			setSliderValue(handles, opt);
 		}
 
 		return this.each(function() {
