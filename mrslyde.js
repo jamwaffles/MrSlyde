@@ -193,8 +193,29 @@
 			focusedSlider = null;
 		});
 
+		// Set the handle positions if the original input's value changes
 		$('body').on('change', 'input.mrslyde', function() {
-			
+			var html = $(this).next();
+			var handles = html.find('.mrslyde-handle');
+			var opt = html.find('.track').data('mrslyde');
+
+			opt.value = this.value.split(',');
+
+			handles.each(function(index) {
+				opt.value[index] = confine(parseFloat(opt.value[index]), opt.min, opt.max);
+
+				positionFromValue(this, opt.value[index], opt);
+			});
+
+			// If this is a range slider, set the range bar indicator
+			if(handles.length === 2) {
+				setRangeBar(html.find('.track')[0], handles[0], handles[1]);
+			}
+
+			// Set input's value again to confine number range
+			this.value = opt.value.join(',');
+
+			displaySliderValue(handles, opt);
 		});
 
 		// Initialise the slider
@@ -211,7 +232,7 @@
 				html.find('.track').append($('<div />').addClass('range-bar'));
 			}
 
-			input.hide().after(html);
+			input.addClass('mrslyde').hide().after(html);
 
 			// Set up labels
 			html.find('.left').text(opt.min);
