@@ -117,7 +117,7 @@
 			bar.style.width = delta + '%';
 		}
 
-		function setSliderValue(handles, opt) {
+		function setSliderValue(handles, opt, input) {
 			var firstHandle = toDp($(handles[0]).data('value'), opt.precision);
 			var secondHandle = toDp($(handles[1]).data('value'), opt.precision);
 			var label = $(handles[0]).closest('.mrslyde-container').find('.center');
@@ -129,8 +129,7 @@
 			}
 
 			// Set input's value
-			label.closest('.mrslyde-container').prev().val(firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : ''));
-			console.log(firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : ''));
+			input.value = firstHandle + (!isNaN(secondHandle) ? ',' + secondHandle : '');
 		}
 
 		// Start dragging the handle
@@ -150,13 +149,16 @@
 					elem.addClass('touch');
 				}
 
-				// Trigger event on input
-				elem.closest('.mrslyde-container').prev().trigger('slydestart');
-
 				focusedSlider = {
 					handle: elem,
-					track: elem.parent()
+					track: elem.parent(),
+					container: elem.closest('.mrslyde-container')
 				};
+				focusedSlider.opt = focusedSlider.track.data('mrslyde');
+				focusedSlider.input = focusedSlider.container.prev();
+
+				// Trigger event on input
+				focusedSlider.input.trigger('slydestart');
 			}
 		});
 
@@ -174,7 +176,7 @@
 				(e.preventDefault) ? e.preventDefault() : e.returnValue = false;
 
 				var handles = focusedSlider.track.children('.mrslyde-handle');
-				var opt = focusedSlider.track.data('mrslyde');
+				var opt = focusedSlider.opt;
 				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
 
 				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt, focusedSlider.handle.siblings('.mrslyde-handle')[0]);
@@ -183,10 +185,10 @@
 					setRangeBar(focusedSlider.track[0], handles.get(0), handles.get(1));
 				}
 
-				setSliderValue(handles, opt);
+				setSliderValue(handles, opt, focusedSlider.input);
 
 				// Trigger event
-				focusedSlider.track.closest('.mrslyde-container').prev().trigger('slydechange');
+				focusedSlider.input.trigger('slydechange');
 			}
 		}
 
@@ -197,7 +199,7 @@
 			}
 
 			// Trigger event
-			focusedSlider.track.closest('.mrslyde-container').prev().trigger('slydeend');
+			focusedSlider.input.trigger('slydeend');
 
 			focusedSlider.handle.removeClass('mousedown touch');
 
@@ -228,7 +230,7 @@
 			// Set input's value again to confine number range
 			this.value = opt.value.join(',');
 
-			setSliderValue(handles, opt);
+			setSliderValue(handles, opt, this);
 		});
 
 		// Initialise the slider
@@ -267,7 +269,7 @@
 				setRangeBar(html.find('.track')[0], handles[0], handles[1]);
 			}
 
-			setSliderValue(handles, opt);
+			setSliderValue(handles, opt, input);
 		}
 
 		return this.each(function() {
