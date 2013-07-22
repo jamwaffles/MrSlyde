@@ -82,6 +82,7 @@
 			var trackWidth = track.clientWidth;
 			var handleX = pagex - track.offsetLeft - (handleWidth / 2);
 			var handleWidthNormalised = handleWidth / trackWidth;
+			var normalisedStepSize = 1 / ((opt.max - opt.min) / opt.step);
 
 			var leftLimit = 0;
 			var rightLimit = 1;
@@ -97,7 +98,6 @@
 				}
 			}
 
-			var normalisedStepSize = 1 / ((opt.max - opt.min) / opt.step);
 			var handleNormalised = confine(toNearest(handleX / trackWidth, normalisedStepSize), leftLimit, rightLimit);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
@@ -106,6 +106,15 @@
 			handle.style.left = (handleNormalised * 100) + '%';
 
 			return handleValue;
+		}
+
+		function setRangeBar(track, leftHandle, rightHandle) {
+			var bar = $(track).children('.range-bar')[0];
+			var handleWidthPercent = leftHandle.offsetWidth / track.clientWidth * 100;
+			var delta = parseFloat(rightHandle.style.left) - parseFloat(leftHandle.style.left);
+
+			bar.style.left = leftHandle.style.left;
+			bar.style.width = delta + '%';
 		}
 
 		function displaySliderValue(handles, opt) {
@@ -163,6 +172,10 @@
 
 				positionFromMouse(focusedSlider.handle[0], focusedSlider.track[0], pageX, opt, focusedSlider.handle.siblings('.mrslyde-handle')[0]);
 
+				if(opt.range) {
+					setRangeBar(focusedSlider.track[0], focusedSlider.handle[0], focusedSlider.handle.siblings('.mrslyde-handle')[0]);
+				}
+
 				displaySliderValue(handles, opt);
 			}
 		}
@@ -194,6 +207,8 @@
 				var newHandle = handle.clone();
 
 				handle.after(newHandle);
+
+				html.find('.track').append($('<div />').addClass('range-bar'));
 			}
 
 			input.hide().after(html);
@@ -212,6 +227,11 @@
 
 				positionFromValue(this, opt.value[index], opt);
 			});
+
+			// If this is a range slider, set the range bar indicator
+			if(handles.length === 2) {
+				setRangeBar(html.find('.track')[0], handles[0], handles[1]);
+			}
 
 			displaySliderValue(handles, opt);
 		}
