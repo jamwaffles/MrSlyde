@@ -209,7 +209,7 @@
 		// Stop dragging the handle
 		$('body').on('mouseup touchend', function() {
 			if(focusedSlider === null) {
-				return false;
+				return;
 			}
 
 			// Trigger event
