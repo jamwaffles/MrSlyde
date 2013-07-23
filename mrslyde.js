@@ -28,7 +28,7 @@
 		var markup = $('<div class="mrslyde-container">\
 			<div class="track-wrapper">\
 				<div class="track">\
-					<a class="mrslyde-handle"></a>\
+					<span class="mrslyde-handle"></span>\
 				</div>\
 			</div>\
 			<div class="values">\
