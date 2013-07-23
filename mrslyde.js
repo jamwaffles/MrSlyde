@@ -81,6 +81,11 @@
 			handle.style.left = (normalised * 100) + '%';
 		}
 
+		// Apply CSS translate to handle. Fall back to style.left
+		function translate(handle, x) {
+			handle.style.WebkitTransform = 'translate(' + x + ', 0)';
+		}
+
 		// Position handle and store handle's converted value based on mouse position
 		function positionFromMouse(handle, track, pagex, opt, otherHandle) {
 			var props = opt.props;
@@ -102,7 +107,7 @@
 
 			props.handle.data('value', handleValue);
 
-			handle.style.left = (handleNormalised * 100) + '%';
+			translate(handle, (handleNormalised * 100) * (1 / props.handleWidthNormalised) + '%');
 
 			return handleValue;
 		}
