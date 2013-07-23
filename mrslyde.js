@@ -28,7 +28,7 @@
 		var markup = $('<div class="mrslyde-container">\
 			<div class="track-wrapper">\
 				<div class="track">\
-					<span class="mrslyde-handle"></span>\
+					<a class="mrslyde-handle"></a>\
 				</div>\
 			</div>\
 			<div class="values">\
@@ -191,7 +191,7 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				var handles = focusedSlider.handles;
 				var opt = focusedSlider.opt;
-				var pageX = e.pageX || e.clientX || e.touches[0].clientX;
+				var pageX = e.touches ? e.touches[0].pageX : e.pageX;
 
 				positionFromMouse(focusedSlider.handle, focusedSlider.track[0], pageX, focusedSlider.opt, focusedSlider.otherHandle);
 
