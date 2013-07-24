@@ -20,7 +20,7 @@
 			max: 100,
 			step: 10,
 			snap: true,
-			showValues: true,
+			labels: true,
 			precision: 0,
 			range: false 		// Whether this is a two handled range slider or not
 		};
@@ -297,6 +297,11 @@
 			}
 
 			setSliderValue(handles, opt, input, html.find('.center')[0]);
+
+			// Hide labels if told to do so
+			if(!opt.labels) {
+				html.find('.values').hide();
+			}
 		}
 
 		return this.each(function() {

@@ -16,8 +16,7 @@ Setting default options is done by passing an object to the plugin:
 
 	$('input.foo').mrslyde({
 		min: 10,
-		max: 30,
-		defaultValue: 20
+		max: 30
 	});
 
 The example above will set all matched sliders to a range of 10-30 with a default of 20.
@@ -46,10 +45,6 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 	Specifies the maximum value the slider can be set to.
 
-- **defaultValue** (`value`): 150
-
-	What the default value of the slider should be when `$.mrslyde` is invoked. **Note that this uses the `<input>`'s `value` attribute instead of a `data-` attribute.**
-
 - **step** (`data-step`): 10
 
 	Sets to which multiple the slider value should snap to. For example, a value of `15` will increment the slider's value in steps of 15. **Setting actual handle snap is defined by the `snap:` option, below.**
@@ -58,7 +53,7 @@ Note that any `data-` attributes are lowercased by jQuery, so camel case isn't n
 
 	If set to true, this will tell the handle to 'jump' to each step point along the slider track, instead of following the mouse pixel for pixel.
 
-- **showValues** (`data-showvalues`): true
+- **labels** (`data-labels`): true
 
 	Specifies whether the minimum, current and maximum values should be displayed under the slider track.
 
