@@ -80,16 +80,27 @@
 
 			handle.mrslyde.left = (normalised * 100);
 
-			translate(handle, (normalised * 100) * (1 / (handle.offsetWidth / track.clientWidth)) + '%');
+			translate(handle, (normalised * 100) * (1 / (handle.offsetWidth / track.clientWidth)) + '%', (normalised * 100) + '%');
 		}
 
-		// Apply CSS translate to handle. Fall back to mrslyde.percentage
-		function translate(handle, x) {
-			handle.style.WebkitTransform = 'translate(' + x + ', 0)';
-			handle.style.MozTransform = 'translate(' + x + ', 0)';
-			handle.style.MsTransform = 'translate(' + x + ', 0)';
-			handle.style.OTransform = 'translate(' + x + ', 0)';
-			handle.style.transform = 'translate(' + x + ', 0)';
+		// Select the supported translate property for this browser
+		var translateProperty = null;
+
+		if(document.body.style.transform !== undefined) translateProperty = 'transform';
+		else if(document.body.style.WebkitTransform !== undefined) translateProperty = 'WebkitTransform';
+		else if(document.body.style.MozTransform !== undefined) translateProperty = 'MozTransform';
+		else if(document.body.style.MsTransform !== undefined) translateProperty = 'MsTransform';
+		else if(document.body.style.OTransform !== undefined) translateProperty = 'OTransform';
+
+		// Apply CSS translate to handle. Fall back to mrslyde.percentage and style.left if 
+		// transforms are not supported
+		function translate(handle, x, percentage) {
+			if(translateProperty !== null) {
+				handle.style[translateProperty] = 'translate(' + x + ', 0)';
+			} else {
+				console.log(handle, handle.style, handle.style.left, percentage);
+				handle.style.left = percentage;
+			}
 		}
 
 		// Position handle and store handle's converted value based on mouse position
@@ -115,7 +126,7 @@
 
 			handle.mrslyde.left = (handleNormalised * 100);
 
-			translate(handle, (handleNormalised * 100) * (1 / props.handleWidthNormalised) + '%');
+			translate(handle, (handleNormalised * 100) * (1 / props.handleWidthNormalised) + '%', handle.mrslyde.left + '%');
 
 			return handleValue;
 		}
