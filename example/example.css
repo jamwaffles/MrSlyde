@@ -56,6 +56,12 @@ html.slyding {
 	top: -4px;
 	z-index: 1;
 	cursor: pointer;
+
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
 }
 
 .mrslyde-container .handle:hover, .mrslyde-container .handle.mousedown {
