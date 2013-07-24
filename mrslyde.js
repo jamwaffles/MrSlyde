@@ -98,7 +98,6 @@
 			if(translateProperty !== null) {
 				handle.style[translateProperty] = 'translate(' + x + ', 0)';
 			} else {
-				console.log(handle, handle.style, handle.style.left, percentage);
 				handle.style.left = percentage;
 			}
 		}
@@ -211,7 +210,7 @@
 			if(document.documentElement.className.indexOf('slyding') > -1) {
 				var handles = focusedSlider.handles;
 				var opt = focusedSlider.opt;
-				var pageX = e.touches ? e.touches[0].pageX : e.pageX;
+				var pageX = (e.touches ? e.touches[0].pageX : e.pageX) || e.clientX;
 
 				positionFromMouse(focusedSlider.handle, focusedSlider.track[0], pageX, focusedSlider.opt, focusedSlider.otherHandle);
 
@@ -247,8 +246,6 @@
 			var html = $(this).next();
 			var handles = html.find('.mrslyde-handle');
 			var opt = html.find('.track').data('mrslyde');
-
-			console.log("Change");
 
 			opt.value = this.value.split(',');
 
