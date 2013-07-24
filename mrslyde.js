@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 1.0.0                              *
+ * MrSlyde 1.0.1                              *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *

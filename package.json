@@ -1,6 +1,6 @@
 {
 	"name": "MrSlyde",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "James Waples <james@jamwaffles.co.uk>",
 	"description": "jQuery slider widget plugin",
 	"dependencies": {
