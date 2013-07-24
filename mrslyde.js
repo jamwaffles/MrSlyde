@@ -72,18 +72,24 @@
 
 		// Position handle along track based on value given
 		function positionFromValue(handle, value, opt) {
-			var track = $(handle).parent();
+			var track = $(handle).parent()[0];
 
 			$(handle).data('value', value);
 
 			var normalised = (value - opt.min) / (opt.max - opt.min);
 
-			handle.style.left = (normalised * 100) + '%';
+			handle.mrslyde.left = (normalised * 100);
+
+			translate(handle, (normalised * 100) * (1 / (handle.offsetWidth / track.clientWidth)) + '%');
 		}
 
-		// Apply CSS translate to handle. Fall back to style.left
+		// Apply CSS translate to handle. Fall back to mrslyde.percentage
 		function translate(handle, x) {
 			handle.style.WebkitTransform = 'translate(' + x + ', 0)';
+			handle.style.MozTransform = 'translate(' + x + ', 0)';
+			handle.style.MsTransform = 'translate(' + x + ', 0)';
+			handle.style.OTransform = 'translate(' + x + ', 0)';
+			handle.style.transform = 'translate(' + x + ', 0)';
 		}
 
 		// Position handle and store handle's converted value based on mouse position
@@ -96,9 +102,9 @@
 			// Limit handle ranges based on other handle's position (collision detection)
 			if(otherHandle !== undefined) {
 				if(props.handle.index() === 0) {
-					rightLimit = parseFloat(otherHandle.style.left) / 100 - props.handleWidthNormalised;
+					rightLimit = (otherHandle.mrslyde.left / 100) - props.handleWidthNormalised;
 				} else {
-					leftLimit = parseFloat(otherHandle.style.left) / 100 + props.handleWidthNormalised;
+					leftLimit = (otherHandle.mrslyde.left / 100) + props.handleWidthNormalised;
 				}
 			}
 
@@ -107,17 +113,20 @@
 
 			props.handle.data('value', handleValue);
 
+			handle.mrslyde.left = (handleNormalised * 100);
+
 			translate(handle, (handleNormalised * 100) * (1 / props.handleWidthNormalised) + '%');
 
 			return handleValue;
 		}
 
+		// The range bar is the only thing that doesn't use a translate
 		function setRangeBar(track, leftHandle, rightHandle) {
 			var bar = $(track).children('.range-bar')[0];
 			var handleWidthPercent = leftHandle.offsetWidth / track.clientWidth * 100;
-			var delta = parseFloat(rightHandle.style.left) - parseFloat(leftHandle.style.left);
+			var delta = rightHandle.mrslyde.left - leftHandle.mrslyde.left;
 
-			bar.style.left = leftHandle.style.left;
+			bar.style.left = leftHandle.mrslyde.left + '%';
 			bar.style.width = delta + '%';
 		}
 
@@ -228,6 +237,8 @@
 			var handles = html.find('.mrslyde-handle');
 			var opt = html.find('.track').data('mrslyde');
 
+			console.log("Change");
+
 			opt.value = this.value.split(',');
 
 			handles.each(function(index) {
@@ -273,6 +284,8 @@
 			var handles = html.find('.mrslyde-handle');
 
 			handles.each(function(index) {
+				this.mrslyde = {};
+
 				opt.value[index] = confine(parseFloat(opt.value[index]), opt.min, opt.max);
 
 				positionFromValue(this, opt.value[index], opt);
