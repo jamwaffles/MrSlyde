@@ -249,6 +249,10 @@
 
 		// Initialise the slider
 		function init(input, opt) {
+			if(input.data('mrslyde-init') === true) {
+				return;
+			}
+
 			var html = markup.clone();
 			var handle = html.find('.mrslyde-handle');
 
@@ -291,6 +295,8 @@
 			if(!opt.labels) {
 				html.find('.values').hide();
 			}
+
+			input.data('mrslyde-init', true);
 		}
 
 		return this.each(function() {
