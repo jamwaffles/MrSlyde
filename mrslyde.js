@@ -47,7 +47,7 @@
 				}
 			});
 
-			return data;
+			return obj;
 		}
 
 		// Cache some maths functions to speed stuff up (see http://jsperf.com/cached-math-object)
@@ -300,15 +300,19 @@
 		}
 
 		return this.each(function() {
-			var settings = $.extend({}, defaults, getDataOptions($(this)), options);
+			var settings = $.extend({}, defaults, options, getDataOptions($(this)));
 
 			settings.min = toNearest(settings.min, settings.step);
 			settings.max = toNearest(settings.max, settings.step);
 
-			settings.value = this.value.split(',');
+			settings.value = this.value.length ? this.value.split(',') : settings.value;
 
-			if(!settings.value[0].length) {
-				settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
+			if(settings.value === undefined) {
+				if(settings.range) {
+					settings.value = [ settings.min, settings.max ];
+				} else {
+					settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
+				}
 			}
 
 			settings.normalisedStepSize = 1 / ((settings.max - settings.min) / settings.step);
