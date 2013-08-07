@@ -80,6 +80,7 @@ The event is bound to the base input, so you can retrieve the value using `this.
 # TODO
 
 - Vertical slider
+- **Update this readme with new options**
 
 # Changelog
 
