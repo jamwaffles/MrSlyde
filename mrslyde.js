@@ -47,7 +47,7 @@
 				}
 			});
 
-			return data;
+			return obj;
 		}
 
 		// Cache some maths functions to speed stuff up (see http://jsperf.com/cached-math-object)
@@ -99,7 +99,13 @@
 				}
 			}
 
-			var handleNormalised = confine(toNearest(handleX / props.trackWidth, opt.normalisedStepSize), leftLimit, rightLimit);
+			var handleNormalised = handleX / props.trackWidth;
+
+			if(options.snap) {
+				handleNormalised = toNearest(temp, opt.normalisedStepSize);
+			}
+
+			handleNormalised = confine(handleNormalised, leftLimit, rightLimit);
 			var handleValue = opt.min + (opt.max - opt.min) * handleNormalised;
 
 			props.handle.data('value', handleValue);
@@ -249,6 +255,10 @@
 
 		// Initialise the slider
 		function init(input, opt) {
+			if(input.data('mrslyde-init') === true) {
+				return;
+			}
+
 			var html = markup.clone();
 			var handle = html.find('.mrslyde-handle');
 
@@ -291,18 +301,24 @@
 			if(!opt.labels) {
 				html.find('.values').hide();
 			}
+
+			input.data('mrslyde-init', true);
 		}
 
 		return this.each(function() {
-			var settings = $.extend({}, defaults, getDataOptions($(this)), options);
+			var settings = $.extend({}, defaults, options, getDataOptions($(this)));
 
 			settings.min = toNearest(settings.min, settings.step);
 			settings.max = toNearest(settings.max, settings.step);
 
-			settings.value = this.value.split(',');
+			settings.value = this.value.length ? this.value.split(',') : settings.value;
 
-			if(!settings.value[0].length) {
-				settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
+			if(settings.value === undefined) {
+				if(settings.range) {
+					settings.value = [ settings.min, settings.max ];
+				} else {
+					settings.value = [ settings.max - ((settings.max - settings.min) / 2) ];
+				}
 			}
 
 			settings.normalisedStepSize = 1 / ((settings.max - settings.min) / settings.step);
