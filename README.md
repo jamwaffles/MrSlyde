@@ -80,6 +80,8 @@ The event is bound to the base input, so you can retrieve the value using `this.
 # TODO
 
 - Vertical slider
+- Click on track to move slider to position
+	- Picks the closest slider to the mouse on range sliders
 
 # Changelog
 
