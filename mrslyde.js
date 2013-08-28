@@ -1,6 +1,6 @@
 /**********************************************
  *                                            *
- * MrSlyde 1.0.1                              *
+ * MrSlyde 1.0.2                              *
  *                                            *
  * James Waples (jamwaffles@gmail.com)        *
  *                                            *
@@ -310,6 +310,10 @@
 
 			settings.min = toNearest(settings.min, settings.step);
 			settings.max = toNearest(settings.max, settings.step);
+
+			if(settings.value.indexOf(',') > -1) {
+				settings.value = settings.value.split(',');
+			}
 
 			settings.value = this.value.length ? this.value.split(',') : settings.value;
 
